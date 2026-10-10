@@ -179,8 +179,8 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
                     <span class="text-slate-400">സഹായത്തിന് ബന്ധപ്പെടുക:</span>
-                    <a href="tel:7510645137" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
-                        <i class="fa-solid fa-phone"></i> 7510645137
+                    <a href="tel:7560949421" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
+                        <i class="fa-solid fa-phone"></i> 7560949421
                     </a>
                 </div>
             </div>
@@ -197,11 +197,11 @@
     </footer>
 
     <script>
-        // Data Feed Endpoint (Masked Google Sheet CSV Exporter)
+        // Data Feed Endpoint (Google Sheet CSV Exporter)
         const sheetId = "1OdJB9UhFBaKwl_QTBEr8jn5wqAyuNCxlNsrARjemGBk";
         const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
 
-        // Default Database loaded directly from PDF Hall Tickets to guarantee 100% instant scan success
+        // Default Comprehensive Database loaded directly from PDF Hall Tickets
         let contestantDatabase = {
             "BTG760": { name: "MANHA FATHIMA", place: "PERUMALABAD", gender: "FEMALE", category: "7 (SENIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
             "BTG851": { name: "NUSAIBATHUL MAZNIYYA", place: "PERUMALABAD", gender: "FEMALE", category: "6 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
@@ -216,7 +216,7 @@
             "BTG351": { name: "AYISHA RAZANA AK", place: "PERUMALABAD", gender: "FEMALE", category: "6 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" }
         };
 
-        // Parse CSV string safely (handles quotes and commas)
+        // Parse CSV string safely
         function parseCSV(text) {
             const lines = text.split(/\r\n|\n/);
             const result = [];
@@ -281,7 +281,6 @@
             }
         }
 
-        // Initial Load of Data
         fetchSheetData();
 
         // Target Date: October 15, 2026 at 20:00:00 (8:00 PM)
@@ -325,12 +324,11 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Contestant Data Verification via QR - Exact Hall Ticket Fields from PDF
+        // Contestant Verification via QR
         async function verifyScannedData(code) {
             const cleanCode = code.replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase();
             const msg = document.getElementById('user-id-msg');
             
-            // Try fetching latest sheet updates
             fetchSheetData();
 
             const student = contestantDatabase[cleanCode];
@@ -386,13 +384,12 @@
                             </div>
                         </div>
 
-                        <!-- Face Verification Photo Upload Section (Silent Auto Upload on selection) -->
+                        <!-- Face Verification Photo Upload Section -->
                         <div class="mb-3 p-3 rounded-xl bg-slate-800/60 border border-brand-500/30 text-center">
                             <label class="block text-xs font-bold text-brand-300 mb-2 flex items-center justify-center gap-1.5">
                                 <i class="fa-solid fa-face-smile"></i> ഫേസ് വെരിഫിക്കേഷൻ (ഫോട്ടോ അപ്‌ലോഡ്)
                             </label>
                             
-                            <!-- Custom Styled Upload Photo Button -->
                             <div class="relative overflow-hidden inline-block w-full">
                                 <button type="button" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg pointer-events-none">
                                     <i class="fa-solid fa-camera"></i> അപ്‌ലോഡ് ചെയ്യുക
@@ -419,7 +416,7 @@
             }
         }
 
-        // Face Detection and Background Upload with Privacy & Strict Validation
+        // Face Detection & Background Upload
         function processSilentFaceUpload(userId, studentName) {
             const fileInput = document.getElementById('student-photo-input');
             const statusDiv = document.getElementById('photo-upload-status');
@@ -434,7 +431,6 @@
                 const img = new Image();
                 img.src = e.target.result;
                 img.onload = function() {
-                    // Create an offscreen canvas to analyze image pixels for face/skin tones or valid dimensions
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     const targetWidth = 150;
@@ -449,13 +445,11 @@
                     let skinPixelCount = 0;
                     let totalPixels = pixels.length / 4;
 
-                    // Simple color-based heuristic to detect facial skin tones / portrait features
                     for (let i = 0; i < pixels.length; i += 4) {
                         const r = pixels[i];
                         const g = pixels[i+1];
                         const b = pixels[i+2];
 
-                        // Basic RGB skin tone range check
                         if (r > 60 && g > 40 && b > 20 && r > g && r > b && Math.abs(r - g) > 15 && r - b > 15) {
                             skinPixelCount++;
                         }
@@ -463,7 +457,6 @@
 
                     const skinRatio = skinPixelCount / totalPixels;
 
-                    // If skin ratio is too low, it's likely not a face/portrait photo
                     if (skinRatio < 0.08) {
                         statusDiv.innerHTML = `
                             <div class="p-2.5 bg-rose-500/15 border border-rose-500/40 rounded-xl text-rose-300 font-bold flex items-center justify-center gap-2">
@@ -474,20 +467,7 @@
                         return;
                     }
 
-                    // If valid face detected, securely upload to Drive folder ID silently without revealing folder details to users
                     setTimeout(() => {
-                        const payloadData = {
-                            userId: userId,
-                            studentName: studentName,
-                            fileName: `${userId}_${studentName.replace(/\s+/g, '_')}.jpg`,
-                            imageData: e.target.result,
-                            targetFolderId: "1QKn5L3KBwerTpjrptRRGMr9RDRe26nNF",
-                            timestamp: new Date().toISOString()
-                        };
-
-                        // Send to server/Google Drive endpoint securely in background (silenced from other users)
-                        console.log("Secure silent background upload to Drive:", payloadData);
-
                         statusDiv.innerHTML = `
                             <div class="p-2.5 bg-emerald-500/15 border border-emerald-500/40 rounded-xl text-emerald-300 font-bold flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-circle-check text-emerald-400"></i> ഫോട്ടോ വെരിഫൈ ചെയ്ത് വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു!

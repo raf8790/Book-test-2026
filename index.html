@@ -201,7 +201,20 @@
         const sheetId = "1OdJB9UhFBaKwl_QTBEr8jn5wqAyuNCxlNsrARjemGBk";
         const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
 
-        let contestantDatabase = {};
+        // Default Database loaded directly from PDF Hall Tickets to guarantee 100% offline & instant scan success
+        let contestantDatabase = {
+            "BTG760": { name: "MANHA FATHIMA", place: "PERUMALABAD", gender: "FEMALE", category: "7 (SENIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG851": { name: "NUSAIBATHUL MAZNIYYA", place: "PERUMALABAD", gender: "FEMALE", category: "6 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTB221": { name: "MUSTHAFA B", place: "HABEEB NAGAR", gender: "MALE", category: "5 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG104": { name: "MUBEENA B", place: "HABEEB NAGAR", gender: "FEMALE", category: "7 (SENIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG540": { name: "FATHIMA B", place: "HABEEB NAGAR", gender: "FEMALE", category: "9 (SENIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTB129": { name: "MUHAMMAD YASEEN.O", place: "HABEEB NAGAR", gender: "MALE", category: "4 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTB627": { name: "MUHAMMED FARHAN", place: "PERUMALABAD", gender: "MALE", category: "4 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG902": { name: "HADIYA. PK", place: "HABEEB NAGAR", gender: "FEMALE", category: "10 (SENIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG987": { name: "HADIYA AP", place: "EDAKKOM", gender: "FEMALE", category: "8 (SENIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTB456": { name: "HANI PK", place: "HABEEB NAGAR", gender: "MALE", category: "5 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG351": { name: "AYISHA RAZANA AK", place: "PERUMALABAD", gender: "FEMALE", category: "6 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" }
+        };
 
         // Parse CSV string safely (handles quotes and commas)
         function parseCSV(text) {
@@ -241,8 +254,6 @@
                 const rows = parseCSV(csvData);
 
                 if (rows.length > 0) {
-                    const db = {};
-                    
                     let startIndex = 0;
                     if (rows[0] && (rows[0][0].toLowerCase().includes("id") || rows[0][0].toLowerCase().includes("user"))) {
                         startIndex = 1;
@@ -252,7 +263,7 @@
                         const row = rows[i];
                         if (!row || row.length < 2) continue;
                         
-                        const userId = (row[0] || '').trim().toUpperCase();
+                        const userId = (row[0] || '').replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase();
                         const name = row[1] || 'N/A';
                         const place = row[2] || 'PERUMALABAD';
                         const gender = row[3] || 'N/A';
@@ -261,13 +272,12 @@
                         const venue = row[6] || 'MADRASATHUL IMAN, EDAKKOM';
 
                         if (userId) {
-                            db[userId] = { name, place, gender, category, examDate, venue };
+                            contestantDatabase[userId] = { name, place, gender, category, examDate, venue };
                         }
                     }
-                    contestantDatabase = db;
                 }
             } catch (error) {
-                console.warn("Sync temporarily unavailable.", error);
+                console.warn("Sheet sync unavailable, using cached database.", error);
             }
         }
 
@@ -317,19 +327,13 @@
 
         // Contestant Data Verification via QR - Exact Hall Ticket Fields from PDF
         async function verifyScannedData(code) {
+            const cleanCode = code.replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase();
             const msg = document.getElementById('user-id-msg');
             
-            msg.innerHTML = `
-                <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 text-slate-300 text-center animate-pulse">
-                    <i class="fa-solid fa-arrows-rotate fa-spin text-brand-400 text-xl mb-2 block"></i>
-                    വിവരങ്ങൾ തൽസമയം പരിശോധിക്കുന്നു... (${code})
-                </div>
-            `;
+            // Try fetching latest sheet updates
+            fetchSheetData();
 
-            // Always fetch live data before verifying
-            await fetchSheetData();
-
-            const student = contestantDatabase[code];
+            const student = contestantDatabase[cleanCode];
 
             if (student) {
                 msg.innerHTML = `
@@ -350,7 +354,7 @@
                                 <span class="text-[10px] text-slate-400 font-bold uppercase">SSF PERUMALABAD UNIT</span>
                             </div>
                             <span class="font-mono font-black text-brand-400 bg-brand-500/10 border border-brand-500/30 px-2 py-0.5 rounded text-xs">
-                                USER ID: ${code}
+                                USER ID: ${cleanCode}
                             </span>
                         </div>
 
@@ -392,7 +396,7 @@
                 msg.innerHTML = `
                     <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-center">
                         <i class="fa-solid fa-triangle-exclamation text-xl mb-1 block"></i>
-                        <span class="font-bold">⚠️ ${code}:</span> സർവറിൽ ഈ യൂസർ ഐ.ഡി കണ്ടെത്താനായില്ല. ദയവായി ശരിയായ ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാൻ ചെയ്യുക.
+                        <span class="font-bold">⚠️ ${cleanCode}:</span> സർവറിൽ ഈ യൂസർ ഐ.ഡി കണ്ടെത്താനായില്ല. ദയവായി ശരിയായ ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാൻ ചെയ്യുക.
                     </div>
                 `;
             }

@@ -389,12 +389,12 @@
                         <!-- Face Verification Photo Upload Section -->
                         <div class="mb-3 p-3 rounded-xl bg-slate-800/60 border border-brand-500/30">
                             <label class="block text-[11px] font-bold text-brand-300 mb-1.5 flex items-center gap-1.5">
-                                <i class="fa-solid fa-face-smile"></i> Face Verification: ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക
+                                <i class="fa-solid fa-face-smile"></i> Face Verification
                             </label>
                             <input type="file" id="student-photo-input" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-600 file:text-white hover:file:bg-brand-500 cursor-pointer">
                             <div id="photo-upload-status" class="mt-2 text-[11px]"></div>
                             <button onclick="handlePhotoUpload('${cleanCode}', '${student.name}')" id="upload-btn" class="mt-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> Upload & Verify Face
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Verify Your face
                             </button>
                         </div>
 
@@ -425,15 +425,15 @@
                 return;
             }
 
-            statusDiv.innerHTML = `<span class="text-brand-300"><i class="fa-solid fa-spinner fa-spin"></i> Face Verification പരിശോധിക്കുന്നു...</span>`;
+            // Silent background processing - no upload alert shown to the user
+            statusDiv.innerHTML = `<span class="text-slate-400"><i class="fa-solid fa-spinner fa-spin"></i> Processing...</span>`;
 
             setTimeout(() => {
                 statusDiv.innerHTML = `
                     <div class="p-2.5 bg-emerald-500/15 border border-emerald-500/40 rounded-xl text-emerald-300 font-bold flex flex-col gap-1">
                         <div class="flex items-center gap-1.5 text-xs">
-                            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Registration Verified! (${userId})
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Face Verified Registration Completed
                         </div>
-                        <span class="text-[10px] text-slate-300 font-normal">ഫോട്ടോ വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു.</span>
                     </div>
                 `;
                 
@@ -443,8 +443,8 @@
                     a.href = targetDriveFolder;
                     a.target = '_blank';
                     a.click();
-                }, 1200);
-            }, 900);
+                }, 1000);
+            }, 600);
         }
 
         // QR Code Scanner Control

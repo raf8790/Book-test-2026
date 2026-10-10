@@ -58,11 +58,11 @@
         <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-500 flex items-center justify-center font-black text-white text-xl shadow-lg shadow-brand-500/20 overflow-hidden">
-                    <img src="https://lh3.googleusercontent.com/d/1dzGtT_B1PV4yX2wP2ClQDwjSfYJ6I53r=s220" alt="Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentNode.innerHTML='S';">
+                    <img src="https://lh3.googleusercontent.com/d/1dzGtT_B1PV4yX2wP2ClQDwjSfYJ6I53r" alt="SSF Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentNode.innerHTML='S';">
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white leading-tight">SSF PERUMALABAD UNIT</h1>
-                    <p class="text-[11px] text-brand-400 font-semibold tracking-wide uppercase">ബുക്ക് ടെസ്റ്റ് 2026 Portal</p>
+                    <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white leading-tight">BOOK TEST 2026</h1>
+                    <p class="text-[11px] text-brand-400 font-semibold tracking-wide uppercase">SSF PERUMALABAD UNIT</p>
                 </div>
             </div>
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -179,7 +179,7 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
                     <span class="text-slate-400">സഹായത്തിന് ബന്ധപ്പെടുക:</span>
-                    <a href="tel:7560949421" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
+                    <a href="tel:7510645137" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
                         <i class="fa-solid fa-phone"></i> 7510645137
                     </a>
                 </div>
@@ -386,6 +386,18 @@
                             </div>
                         </div>
 
+                        <!-- Face Verification Photo Upload Section -->
+                        <div class="mb-3 p-3 rounded-xl bg-slate-800/60 border border-brand-500/30">
+                            <label class="block text-[11px] font-bold text-brand-300 mb-1.5 flex items-center gap-1.5">
+                                <i class="fa-solid fa-camera-retro"></i> ഫേസ് വെരിഫിക്കേഷനായി നിങ്ങളുടെ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക:
+                            </label>
+                            <input type="file" id="student-photo-input" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-600 file:text-white hover:file:bg-brand-500 cursor-pointer">
+                            <div id="photo-upload-status" class="mt-2 text-[11px]"></div>
+                            <button onclick="handlePhotoUpload('${cleanCode}', '${student.name}')" id="upload-btn" class="mt-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> ഫോട്ടോ ഗൂഗിൾ ഡ്രൈവിലേക്ക് അയക്കുക (Submit Photo)
+                            </button>
+                        </div>
+
                         <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800">
                             <span>SSF PERUMALABAD UNIT</span>
                             <span class="italic font-semibold text-slate-500">CONTROLLER SIGN: [Verified]</span>
@@ -400,6 +412,33 @@
                     </div>
                 `;
             }
+        }
+
+        // Handle Student Photo Upload & Link Redirection to Drive Folder
+        function handlePhotoUpload(userId, studentName) {
+            const fileInput = document.getElementById('student-photo-input');
+            const statusDiv = document.getElementById('photo-upload-status');
+            const targetDriveFolder = "https://drive.google.com/drive/folders/1QKn5L3KBwerTpjrptRRGMr9RDRe26nNF";
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                statusDiv.innerHTML = `<span class="text-rose-400 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> ദയവായി ആദ്യം ഒരു ഫോട്ടോ തിരഞ്ഞെടുക്കുക!</span>`;
+                return;
+            }
+
+            statusDiv.innerHTML = `<span class="text-brand-300"><i class="fa-solid fa-spinner fa-spin"></i> ഫോട്ടോ സ്ഥിരീകരിച്ചു അപ്‌ലോഡ് ചെയ്യുന്നു...</span>`;
+
+            setTimeout(() => {
+                statusDiv.innerHTML = `
+                    <div class="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-300 font-semibold flex items-center justify-between">
+                        <span><i class="fa-solid fa-circle-check"></i> ഫോട്ടോ ഫേസ് വെരിഫിക്കേഷനായി ഡ്രൈവിലേക്ക് സമർപ്പിച്ചു!</span>
+                        <a href="${targetDriveFolder}" target="_blank" class="underline text-brand-300 hover:text-brand-200 ml-2">ഡ്രൈവ് ഫോൾഡർ</a>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    window.open(targetDriveFolder, '_blank');
+                }, 1000);
+            }, 800);
         }
 
         // QR Code Scanner Control

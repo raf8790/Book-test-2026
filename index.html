@@ -249,10 +249,15 @@
                         </div>
                     </div>
 
-                    <label class="w-full bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold py-2.5 px-4 rounded-xl cursor-pointer transition-all shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-upload"></i> ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക
-                        <input type="file" id="profile-upload-input" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
-                    </label>
+                    <div class="w-full space-y-2">
+                        <label class="w-full bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold py-2.5 px-4 rounded-xl cursor-pointer transition-all shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-upload"></i> <span id="photo-upload-label">ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക</span>
+                            <input type="file" id="profile-upload-input" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                        </label>
+                        <button id="remove-photo-btn" onclick="handleRemovePhoto()" class="hidden w-full bg-rose-600/20 border border-rose-500/30 hover:bg-rose-600 hover:text-white text-rose-300 text-xs font-bold py-2 px-4 rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-trash"></i> ഫോട്ടോ മാറ്റിസ്ഥാപിക്കുക / മാറ്റുക
+                        </button>
+                    </div>
                     <p class="text-[10px] text-slate-400 mt-2">JPG, PNG ഫയലുകൾ മാത്രം (Max 2MB)</p>
                 </div>
 
@@ -319,12 +324,43 @@
                     </div>
                     <div>
                         <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">ADMIN CONTROL PANEL</span>
-                        <h3 class="font-black text-white text-sm sm:text-base">മുഴുവൻ വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ</h3>
+                        <h3 class="font-black text-white text-sm sm:text-base">മുഴുവൻ വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ & പ്രൊഫൈലുകൾ</h3>
                     </div>
                 </div>
                 <button onclick="handleLogout()" class="bg-rose-600/80 hover:bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md">
                     <i class="fa-solid fa-right-from-bracket"></i> Exit Admin
                 </button>
+            </div>
+
+            <!-- Admin Sheet Sync Instructions Card -->
+            <div class="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4 text-xs text-amber-200/90 leading-relaxed space-y-2">
+                <div class="font-bold text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-code"></i> Google Sheet Auto-Save Setup (Column O - Profile):
+                </div>
+                <p class="text-[11px] text-slate-300">
+                    നിങ്ങളുടെ ഗൂഗിൾ ഷീറ്റിലെ Column O-ൽ ("Profile") പ്രൊഫൈൽ ചിത്രങ്ങളുടെ URL/Data സ്വയമേവ സേവ് ചെയ്യുന്നതിനായി താഴെ നൽകിയിരിക്കുന്ന Script നിങ്ങളുടെ Google Sheet-ൽ (<code class="bg-slate-800 px-1.5 py-0.5 rounded text-amber-300">Extensions > Apps Script</code>) ചേർത്ത് Web App ആയി Deploy ചെയ്യാം.
+                </p>
+                <details class="mt-2 text-[11px] bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 cursor-pointer">
+                    <summary class="font-bold text-slate-200 hover:text-amber-400">Google Apps Script കോഡ് കാണുക</summary>
+                    <pre class="mt-2 text-[10px] font-mono text-slate-300 whitespace-pre-wrap select-all bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  var userId = data.userId;
+  var photoUrl = data.profilePhoto;
+  
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Registration");
+  var rows = sheet.getDataRange().getValues();
+  
+  for (var i = 1; i < rows.length; i++) {
+    if (rows[i][1] && rows[i][1].toString().trim().toUpperCase() == userId) {
+      sheet.getRange(i + 1, 15).setValue(photoUrl); // Column 15 is Column O (Profile)
+      return ContentService.createTextOutput("Success");
+    }
+  }
+  return ContentService.createTextOutput("User Not Found");
+}
+                    </pre>
+                </details>
             </div>
 
             <!-- Admin Data Stats & Search -->
@@ -334,8 +370,9 @@
                         <input type="text" id="admin-search-input" onkeyup="renderAdminTable()" placeholder="പേര്, User ID, സ്ഥലം തിരയുക..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 pl-9 text-xs text-white focus:outline-none focus:border-amber-500">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
                     </div>
-                    <div class="text-xs text-slate-400">
-                        ആകെ രജിസ്ട്രേഷനുകൾ: <span id="admin-total-count" class="font-bold text-amber-400 text-sm">0</span>
+                    <div class="text-xs text-slate-400 flex items-center gap-4">
+                        <span>ആകെ രജിസ്ട്രേഷനുകൾ: <strong id="admin-total-count" class="font-bold text-amber-400 text-sm">0</strong></span>
+                        <span>ഫോട്ടോ അപ്‌ലോഡ് ചെയ്തവർ: <strong id="admin-photo-count" class="font-bold text-emerald-400 text-sm">0</strong></span>
                     </div>
                 </div>
 
@@ -344,12 +381,14 @@
                     <table class="w-full text-left text-xs text-slate-300">
                         <thead class="bg-slate-800 text-slate-400 font-bold uppercase text-[10px]">
                             <tr>
+                                <th class="p-3">Profile Photo</th>
                                 <th class="p-3">User ID</th>
                                 <th class="p-3">പേര്</th>
                                 <th class="p-3">സ്ഥലം</th>
                                 <th class="p-3">ലിംഗഭേദം</th>
-                                <th class="p-3">ക്ലാസ് / കാറ്റഗറി</th>
+                                <th class="p-3">കാറ്റഗറി</th>
                                 <th class="p-3">പാസ്‌വേഡ്</th>
+                                <th class="p-3 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="admin-table-body" class="divide-y divide-slate-800">
@@ -361,6 +400,23 @@
         </div>
 
     </main>
+
+    <!-- ADMIN PHOTO VIEW MODAL -->
+    <div id="photo-preview-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-5 border border-brand-500/30 shadow-2xl relative text-center animate-fade-in">
+            <button onclick="closePhotoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h4 id="modal-user-name" class="font-bold text-white text-base mb-1">Student Profile</h4>
+            <p id="modal-user-id" class="text-xs font-mono text-brand-400 mb-4">BTG760</p>
+            <div class="w-48 h-48 mx-auto rounded-2xl overflow-hidden border-2 border-brand-500/40 bg-slate-900 shadow-xl mb-4">
+                <img id="modal-photo-img" src="" class="w-full h-full object-cover">
+            </div>
+            <button onclick="closePhotoModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs py-2 rounded-xl transition-all">
+                Close
+            </button>
+        </div>
+    </div>
 
     <!-- ADMIN LOGIN MODAL -->
     <div id="admin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
@@ -399,7 +455,8 @@
         const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc0uKR34rIFoSlyG-3uMSLr-53gIbXI6oB2raiWPvzlVblXHNmRZBsolOpnRNkpt0-4lgFs6rc1rkF/pub?output=csv";
 
         // Google Sheet Apps Script Web App URL for writing back profile photos / data if available (optional endpoint)
-        const sheetActionUrl = ""; // Can be set if Google Apps Script doPost is deployed
+        let sheetActionUrl = ""; // Add your Web App URL here to sync photo changes directly into Column O
+
 
         let adminPassword = "123"; // Default Admin Password from sheet settings
 
@@ -523,14 +580,17 @@
                         const categoryName = (row[6] || '');
                         const passwordVal = (row[8] || '123456');
                         
-                        // Profile photo column (Column O is index 14 or 15 depending on header layout)
-                        // Let's check columns 10 to 16 for a profile image URL/data
+                        // Explicitly check Column O (index 14) for Profile Photo URL/Base64, fallback to checking other columns if offset
                         let profilePhotoVal = '';
-                        for (let col = 9; col < row.length; col++) {
-                            const val = row[col];
-                            if (val && (val.startsWith('http') || val.startsWith('data:image') || val.length > 50)) {
-                                profilePhotoVal = val;
-                                break;
+                        if (row[14] && (row[14].startsWith('http') || row[14].startsWith('data:image') || row[14].length > 30)) {
+                            profilePhotoVal = row[14].trim();
+                        } else {
+                            for (let col = 9; col < row.length; col++) {
+                                const val = row[col];
+                                if (val && (val.startsWith('http') || val.startsWith('data:image') || val.length > 50)) {
+                                    profilePhotoVal = val.trim();
+                                    break;
+                                }
                             }
                         }
 
@@ -555,7 +615,7 @@
                                 profilePhoto: profilePhotoVal 
                             };
                             
-                            // Sync with local storage if cloud profile exists and local doesn't
+                            // Sync with local storage if sheet photo exists and local doesn't
                             if (profilePhotoVal && !localStorage.getItem(`ssf_photo_${userId}`)) {
                                 localStorage.setItem(`ssf_photo_${userId}`, profilePhotoVal);
                             }
@@ -633,6 +693,7 @@
 
             const keys = Object.keys(contestantDatabase);
             let count = 0;
+            let photoCount = 0;
 
             keys.forEach(id => {
                 const user = contestantDatabase[id];
@@ -642,21 +703,46 @@
                     user.place.toLowerCase().includes(searchVal)
                 ) {
                     count++;
+                    const userPhoto = localStorage.getItem(`ssf_photo_${id}`) || user.profilePhoto;
+                    if (userPhoto) photoCount++;
+
+                    const photoHtml = userPhoto 
+                        ? `<img src="${userPhoto}" onclick="openPhotoModal('${user.name}', '${id}', '${userPhoto}')" class="w-10 h-10 rounded-xl object-cover border border-brand-400 shadow cursor-pointer hover:scale-105 transition-transform">` 
+                        : `<div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 font-bold text-xs"><i class="fa-solid fa-user"></i></div>`;
+
                     const tr = document.createElement('tr');
                     tr.className = 'hover:bg-slate-800/40 transition-all';
                     tr.innerHTML = `
+                        <td class="p-3">${photoHtml}</td>
                         <td class="p-3 font-mono font-bold text-amber-400">${id}</td>
                         <td class="p-3 font-semibold text-white">${user.name}</td>
                         <td class="p-3">${user.place}</td>
                         <td class="p-3">${user.gender}</td>
                         <td class="p-3">${user.category}</td>
                         <td class="p-3 font-mono text-emerald-400 font-semibold">${user.pass || '123456'}</td>
+                        <td class="p-3 text-center">
+                            ${userPhoto ? `<button onclick="openPhotoModal('${user.name}', '${id}', '${userPhoto}')" class="bg-brand-600/30 hover:bg-brand-600 text-brand-300 hover:text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all"><i class="fa-solid fa-image mr-1"></i> View</button>` : `<span class="text-slate-600 text-[10px]">No Photo</span>`}
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 }
             });
 
             document.getElementById('admin-total-count').innerText = count;
+            document.getElementById('admin-photo-count').innerText = photoCount;
+        }
+
+        function openPhotoModal(name, id, photoUrl) {
+            document.getElementById('modal-user-name').innerText = name;
+            document.getElementById('modal-user-id').innerText = id;
+            document.getElementById('modal-photo-img').src = photoUrl;
+            document.getElementById('photo-preview-modal').classList.remove('hidden');
+            document.getElementById('photo-preview-modal').classList.add('flex');
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photo-preview-modal').classList.add('hidden');
+            document.getElementById('photo-preview-modal').classList.remove('flex');
         }
 
         // Target Date: October 15, 2026 at 20:00:00 (8:00 PM)
@@ -854,7 +940,7 @@
             reader.onload = function(e) {
                 const base64Image = e.target.result;
                 if (activeUser && activeUser.id !== 'ADMIN') {
-                    // Save in local storage keyed by user ID so it persists across reloads for this student
+                    // Save in local storage keyed by user ID
                     localStorage.setItem(`ssf_photo_${activeUser.id}`, base64Image);
                     
                     // Update in memory database
@@ -864,14 +950,13 @@
 
                     applyProfilePhoto(base64Image);
 
-                    // If a Google Apps Script action URL is configured, push update to sheet
-                    if (typeof sheetActionUrl !== 'undefined' && sheetActionUrl) {
+                    // Sync update to Google Sheet Column O
+                    if (sheetActionUrl) {
                         fetch(sheetActionUrl, {
                             method: 'POST',
-                            mode: 'no-cors',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ userId: activeUser.id, profilePhoto: base64Image })
-                        }).catch(err => console.log('Cloud sheet sync error:', err));
+                        }).catch(err => console.log('Sheet sync error:', err));
                     }
                 }
             };
@@ -882,23 +967,51 @@
             const displayImg = document.getElementById('display-profile-img');
             const placeholder = document.getElementById('display-profile-placeholder');
             const avatarContainer = document.getElementById('profile-avatar-container');
+            const removeBtn = document.getElementById('remove-photo-btn');
+            const uploadLabel = document.getElementById('photo-upload-label');
 
             displayImg.src = imgData;
             displayImg.classList.remove('hidden');
             placeholder.classList.add('hidden');
 
             avatarContainer.innerHTML = `<img src="${imgData}" class="w-full h-full object-cover">`;
+
+            if (removeBtn) removeBtn.classList.remove('hidden');
+            if (uploadLabel) uploadLabel.innerText = "ഫോട്ടോ മാറ്റി പുതിയത് നൽകുക (Change)";
         }
 
         function resetProfilePhoto() {
             const displayImg = document.getElementById('display-profile-img');
             const placeholder = document.getElementById('display-profile-placeholder');
             const avatarContainer = document.getElementById('profile-avatar-container');
+            const removeBtn = document.getElementById('remove-photo-btn');
+            const uploadLabel = document.getElementById('photo-upload-label');
 
             displayImg.classList.add('hidden');
             placeholder.classList.remove('hidden');
             if (activeUser && activeUser.name) {
                 avatarContainer.innerHTML = `<span id="avatar-initials">${activeUser.name.substring(0, 2)}</span>`;
+            }
+
+            if (removeBtn) removeBtn.classList.add('hidden');
+            if (uploadLabel) uploadLabel.innerText = "ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക";
+        }
+
+        function handleRemovePhoto() {
+            if (activeUser && activeUser.id !== 'ADMIN') {
+                localStorage.removeItem(`ssf_photo_${activeUser.id}`);
+                if (contestantDatabase[activeUser.id]) {
+                    contestantDatabase[activeUser.id].profilePhoto = '';
+                }
+                resetProfilePhoto();
+
+                if (sheetActionUrl) {
+                    fetch(sheetActionUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: activeUser.id, profilePhoto: '' })
+                    }).catch(err => console.log('Sheet sync error:', err));
+                }
             }
         }
 

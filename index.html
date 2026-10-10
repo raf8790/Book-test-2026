@@ -82,7 +82,7 @@
             <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
             <span class="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-brand-500/10 text-brand-400 border border-brand-500/20 inline-block mb-4">
-                പ്രത്യേക പുസ്തക പരീക്ഷ
+                ബുക്ക് ടെസ്റ്റ് 2026
             </span>
             <h2 class="text-2xl sm:text-4xl font-extrabold text-white mb-2 leading-tight">
                 ശൈഖ് ജീലാനി (റ)
@@ -117,7 +117,7 @@
                 </div>
             </div>
 
-            <!-- Quiz Status / Action Box (Placeholder for Oct 15 Quiz link) -->
+            <!-- Quiz Status / Action Box -->
             <div id="quiz-status-box" class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs sm:text-sm font-semibold max-w-lg mx-auto flex items-center justify-center gap-3">
                 <i class="fa-solid fa-lock text-base text-amber-400"></i>
                 <span>ഓൺലൈൻ പരീക്ഷാ ലിങ്ക് <strong>ഒക്ടോബർ 15 വ്യാഴാഴ്ച രാത്രി 8:00 മണിക്ക്</strong> ഇവിടെ ലഭ്യമാകുന്നതാണ്.</span>
@@ -152,7 +152,7 @@
                     </button>
                 </div>
                 
-                <!-- Verification Result Card (Formatted like Hall Ticket) -->
+                <!-- Verification Result Card -->
                 <div id="user-id-msg" class="text-xs">
                     <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-700/60 text-slate-400 text-center italic">
                         <i class="fa-solid fa-id-card text-2xl text-slate-600 mb-2 block"></i>
@@ -257,10 +257,11 @@
                         const place = row[2] || 'PERUMALABAD';
                         const gender = row[3] || 'N/A';
                         const category = row[4] || 'N/A';
-                        const venue = row[5] || 'MADRASATHUL IMAN, EDAKKOM';
+                        const examDate = row[5] || 'ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)';
+                        const venue = row[6] || 'MADRASATHUL IMAN, EDAKKOM';
 
                         if (userId) {
-                            db[userId] = { name, place, gender, category, venue };
+                            db[userId] = { name, place, gender, category, examDate, venue };
                         }
                     }
                     contestantDatabase = db;
@@ -314,7 +315,7 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Contestant Data Verification via QR - Formatted as Hall Ticket Card
+        // Contestant Data Verification via QR - Exact Hall Ticket Fields from PDF
         async function verifyScannedData(code) {
             const msg = document.getElementById('user-id-msg');
             
@@ -332,46 +333,58 @@
 
             if (student) {
                 msg.innerHTML = `
-                    <div class="bg-slate-900/90 border border-brand-500/40 rounded-2xl p-4 text-slate-200 shadow-xl relative overflow-hidden">
+                    <div class="bg-slate-900/95 border border-brand-500/40 rounded-2xl p-4 text-slate-200 shadow-xl relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-brand-500 to-blue-500"></div>
                         
+                        <!-- Top Header matching PDF Hall Ticket style -->
+                        <div class="text-center pb-2 mb-2 border-b border-slate-800">
+                            <span class="text-[9px] font-extrabold tracking-widest text-brand-400 uppercase">HALL TICKET BOOK TEST '26</span>
+                            <h4 class="text-xs font-bold text-slate-300">SHAIKH JEELANI SHAIKH (R) MEMORIAL COMPETITION</h4>
+                        </div>
+
                         <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
                             <div class="flex items-center gap-2">
-                                <span class="bg-emerald-500/20 text-emerald-400 p-1.5 rounded-lg text-xs font-bold">
+                                <span class="bg-emerald-500/20 text-emerald-400 p-1 rounded text-[10px] font-bold">
                                     <i class="fa-solid fa-circle-check"></i> Verified
                                 </span>
-                                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">HALL TICKET '26</span>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase">SSF PERUMALABAD UNIT</span>
                             </div>
-                            <span class="font-mono font-black text-brand-400 bg-brand-500/10 border border-brand-500/30 px-2.5 py-0.5 rounded-md text-xs">
-                                ${code}
+                            <span class="font-mono font-black text-brand-400 bg-brand-500/10 border border-brand-500/30 px-2 py-0.5 rounded text-xs">
+                                USER ID: ${code}
                             </span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 text-xs mb-3">
-                            <div>
-                                <span class="text-[10px] text-slate-500 uppercase font-bold block">NAME / പേര്</span>
-                                <span class="font-bold text-slate-100 text-sm">${student.name}</span>
+                        <!-- All 7 Fields from Official PDF Hall Ticket -->
+                        <div class="space-y-1.5 text-xs mb-3 bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+                            <div class="grid grid-cols-3 gap-1">
+                                <span class="text-slate-400 font-bold">NAME:</span>
+                                <span class="col-span-2 font-extrabold text-white">${student.name}</span>
                             </div>
-                            <div>
-                                <span class="text-[10px] text-slate-500 uppercase font-bold block">PLACE / സ്ഥലം</span>
-                                <span class="font-semibold text-slate-300">${student.place}</span>
+                            <div class="grid grid-cols-3 gap-1">
+                                <span class="text-slate-400 font-bold">PLACE:</span>
+                                <span class="col-span-2 font-semibold text-slate-300">${student.place}</span>
                             </div>
-                            <div>
-                                <span class="text-[10px] text-slate-500 uppercase font-bold block">GENDER / ലിംഗം</span>
-                                <span class="font-semibold text-slate-300">${student.gender}</span>
+                            <div class="grid grid-cols-3 gap-1">
+                                <span class="text-slate-400 font-bold">GENDER:</span>
+                                <span class="col-span-2 font-semibold text-slate-300">${student.gender}</span>
                             </div>
-                            <div>
-                                <span class="text-[10px] text-slate-500 uppercase font-bold block">CLASS / CAT</span>
-                                <span class="font-semibold text-brand-300">${student.category}</span>
+                            <div class="grid grid-cols-3 gap-1">
+                                <span class="text-slate-400 font-bold">CLASS/CAT:</span>
+                                <span class="col-span-2 font-bold text-brand-300">${student.category}</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1">
+                                <span class="text-slate-400 font-bold">EXAM DATE:</span>
+                                <span class="col-span-2 font-medium text-[11px] text-emerald-300">${student.examDate}</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1">
+                                <span class="text-slate-400 font-bold">VENUE:</span>
+                                <span class="col-span-2 font-semibold text-amber-200">${student.venue}</span>
                             </div>
                         </div>
 
-                        <div class="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700/60 flex items-center gap-2.5 text-[11px] text-slate-300">
-                            <i class="fa-solid fa-location-dot text-amber-400 text-sm"></i>
-                            <div>
-                                <span class="text-[9px] text-slate-400 uppercase font-bold block leading-tight">VENUE / വേദി</span>
-                                <span class="font-semibold text-amber-200">${student.venue}</span>
-                            </div>
+                        <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800">
+                            <span>SSF PERUMALABAD UNIT</span>
+                            <span class="italic font-semibold text-slate-500">CONTROLLER SIGN: [Verified]</span>
                         </div>
                     </div>
                 `;

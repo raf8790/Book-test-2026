@@ -488,7 +488,6 @@ function doPost(e) {
         // Google Sheet Apps Script Web App URL for writing back profile photos / data if available (optional endpoint)
         let sheetActionUrl = ""; // Add your Web App URL here to sync photo changes directly into Column O
 
-
         let adminPassword = "123"; // Default Admin Password from sheet settings
 
         // 10 Key Facts about Shaikh Abdul Qadir Jeelani (r)
@@ -526,8 +525,53 @@ function doPost(e) {
             }, 300);
         }
 
+        // Countdown Timer Implementation for October 15, 2026, 8:00 PM
+        function initCountdownTimer() {
+            // Target date: October 15, 2026 at 20:00:00 (8:00 PM)
+            const targetDate = new Date('2026-10-15T20:00:00').getTime();
+
+            const updateTimer = () => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+
+                const daysEl = document.getElementById('days');
+                const hoursEl = document.getElementById('hours');
+                const minutesEl = document.getElementById('minutes');
+                const secondsEl = document.getElementById('seconds');
+                const statusBox = document.getElementById('quiz-status-box');
+
+                if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+
+                if (distance < 0) {
+                    daysEl.innerText = '00';
+                    hoursEl.innerText = '00';
+                    minutesEl.innerText = '00';
+                    secondsEl.innerText = '00';
+                    if (statusBox) {
+                        statusBox.className = "p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs sm:text-sm font-semibold max-w-lg mx-auto flex items-center justify-center gap-3";
+                        statusBox.innerHTML = `<i class="fa-solid fa-circle-check text-base text-emerald-400 animate-bounce"></i> <span>ഓൺലൈൻ ടെസ്റ്റ് ലിങ്ക് ഇപ്പോൾ സജീവമാണ്! ഹാൾ ടിക്കറ്റ് ലോഗിൻ ചെയ്ത് പരിശോധിക്കുക.</span>`;
+                    }
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                daysEl.innerText = String(days).padStart(2, '0');
+                hoursEl.innerText = String(hours).padStart(2, '0');
+                minutesEl.innerText = String(minutes).padStart(2, '0');
+                secondsEl.innerText = String(seconds).padStart(2, '0');
+            };
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             initFactSlider();
+            initCountdownTimer();
             checkExistingSession();
         });
 

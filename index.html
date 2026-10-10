@@ -122,22 +122,6 @@
             <i class="fa-solid fa-lock text-base text-amber-400"></i>
             <span>ഓൺലൈൻ ടെസ്റ്റ് ലിങ്ക് <strong>ഒക്ടോബർ 15 വ്യാഴാഴ്ച രാത്രി 8:00 മണിക്ക്</strong> ഇവിടെ ലഭ്യമാകുന്നതാണ്.</span>
         </div>
-
-        <!-- Download App Action Box -->
-        <div class="mt-4 p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 text-center max-w-lg mx-auto flex items-center justify-between gap-3 shadow-md">
-            <div class="flex items-center gap-3 text-left">
-                <div class="p-2.5 rounded-xl bg-brand-500/10 text-brand-400">
-                    <i class="fa-solid fa-cloud-arrow-down text-lg"></i>
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold text-slate-200">SSF Book Test App</h4>
-                    <p class="text-[11px] text-slate-400">ആപ്ലിക്കേഷൻ ഡൗൺലോഡ് ചെയ്യുക</p>
-                </div>
-            </div>
-            <button onclick="downloadApp()" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-1.5">
-                <i class="fa-solid fa-download"></i> Download App
-            </button>
-        </div>
     </div>
 
     <!-- Two Column Details Section -->
@@ -462,21 +446,6 @@
             } else {
                 document.getElementById('qr-reader-container').classList.add('hidden');
             }
-        }
-
-        // Download App Handler
-        function downloadApp() {
-            // Create a dummy text file blob representing the app package or trigger installation
-            const appContent = "SSF PERUMALABAD UNIT - BOOK TEST 2026 OFFICIAL APP PACKAGE\nVersion: 1.0.0\nStatus: Ready for installation";
-            const blob = new Blob([appContent], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = "SSF_Book_Test_2026.apk";
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
         }
     </script>
 </body>

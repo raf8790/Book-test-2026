@@ -179,8 +179,8 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
                     <span class="text-slate-400">സഹായത്തിന് ബന്ധപ്പെടുക:</span>
-                    <a href="tel:7560949421" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
-                        <i class="fa-solid fa-phone"></i> 7560949421
+                    <a href="tel:7510645137" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
+                        <i class="fa-solid fa-phone"></i> 7510645137
                     </a>
                 </div>
             </div>
@@ -384,22 +384,6 @@
                             </div>
                         </div>
 
-                        <!-- Face Verification Photo Upload Section -->
-                        <div class="mb-3 p-3 rounded-xl bg-slate-800/60 border border-brand-500/30 text-center">
-                            <label class="block text-xs font-bold text-brand-300 mb-2 flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-face-smile"></i> ഫേസ് വെരിഫിക്കേഷൻ (ഫോട്ടോ അപ്‌ലോഡ്)
-                            </label>
-                            
-                            <div class="relative overflow-hidden inline-block w-full">
-                                <button type="button" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2 shadow-lg pointer-events-none">
-                                    <i class="fa-solid fa-camera"></i> അപ്‌ലോഡ് ചെയ്യുക
-                                </button>
-                                <input type="file" id="student-photo-input" accept="image/*" onchange="processSilentFaceUpload('${cleanCode}', '${student.name}')" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                            </div>
-
-                            <div id="photo-upload-status" class="mt-2.5 text-xs"></div>
-                        </div>
-
                         <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800">
                             <span>REG: 2026 EDITION</span>
                             <span class="text-emerald-400 font-bold">AUTHORIZED PORTAL</span>
@@ -414,69 +398,6 @@
                     </div>
                 `;
             }
-        }
-
-        // Face Detection & Background Upload
-        function processSilentFaceUpload(userId, studentName) {
-            const fileInput = document.getElementById('student-photo-input');
-            const statusDiv = document.getElementById('photo-upload-status');
-
-            if (!fileInput.files || fileInput.files.length === 0) return;
-
-            const file = fileInput.files[0];
-            statusDiv.innerHTML = `<span class="text-slate-400 flex items-center justify-center gap-1.5"><i class="fa-solid fa-spinner fa-spin"></i> ഫോട്ടോ പരിശോധിക്കുന്നു...</span>`;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    const targetWidth = 150;
-                    const targetHeight = 150 * (img.height / img.width);
-                    canvas.width = targetWidth;
-                    canvas.height = targetHeight;
-                    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-                    const imgData = ctx.getImageData(0, 0, targetWidth, targetHeight);
-                    const pixels = imgData.data;
-                    
-                    let skinPixelCount = 0;
-                    let totalPixels = pixels.length / 4;
-
-                    for (let i = 0; i < pixels.length; i += 4) {
-                        const r = pixels[i];
-                        const g = pixels[i+1];
-                        const b = pixels[i+2];
-
-                        if (r > 60 && g > 40 && b > 20 && r > g && r > b && Math.abs(r - g) > 15 && r - b > 15) {
-                            skinPixelCount++;
-                        }
-                    }
-
-                    const skinRatio = skinPixelCount / totalPixels;
-
-                    if (skinRatio < 0.08) {
-                        statusDiv.innerHTML = `
-                            <div class="p-2.5 bg-rose-500/15 border border-rose-500/40 rounded-xl text-rose-300 font-bold flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-triangle-exclamation text-rose-400"></i> ഫേസ് കണ്ടെത്താനായില്ല! മുഖമുള്ള വ്യക്തമായ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക.
-                            </div>
-                        `;
-                        fileInput.value = '';
-                        return;
-                    }
-
-                    setTimeout(() => {
-                        statusDiv.innerHTML = `
-                            <div class="p-2.5 bg-emerald-500/15 border border-emerald-500/40 rounded-xl text-emerald-300 font-bold flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-circle-check text-emerald-400"></i> ഫോട്ടോ വെരിഫൈ ചെയ്ത് വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു!
-                            </div>
-                        `;
-                    }, 1000);
-                }
-            };
-            reader.readAsDataURL(file);
         }
 
         // QR Code Scanner Control

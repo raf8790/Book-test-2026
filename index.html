@@ -398,6 +398,9 @@
         // Data Feed Endpoint (Published Google Sheet CSV Exporter)
         const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc0uKR34rIFoSlyG-3uMSLr-53gIbXI6oB2raiWPvzlVblXHNmRZBsolOpnRNkpt0-4lgFs6rc1rkF/pub?output=csv";
 
+        // Google Sheet Apps Script Web App URL for writing back profile photos / data if available (optional endpoint)
+        const sheetActionUrl = ""; // Can be set if Google Apps Script doPost is deployed
+
         let adminPassword = "123"; // Default Admin Password from sheet settings
 
         // 10 Key Facts about Shaikh Abdul Qadir Jeelani (r)
@@ -520,6 +523,17 @@
                         const categoryName = (row[6] || '');
                         const passwordVal = (row[8] || '123456');
                         
+                        // Profile photo column (Column O is index 14 or 15 depending on header layout)
+                        // Let's check columns 10 to 16 for a profile image URL/data
+                        let profilePhotoVal = '';
+                        for (let col = 9; col < row.length; col++) {
+                            const val = row[col];
+                            if (val && (val.startsWith('http') || val.startsWith('data:image') || val.length > 50)) {
+                                profilePhotoVal = val;
+                                break;
+                            }
+                        }
+
                         let category = categoryName;
                         if (classVal && categoryName) {
                             category = `${classVal} ${categoryName}`;
@@ -537,8 +551,14 @@
                                 category, 
                                 examDate, 
                                 venue, 
-                                pass: passwordVal 
+                                pass: passwordVal,
+                                profilePhoto: profilePhotoVal 
                             };
+                            
+                            // Sync with local storage if cloud profile exists and local doesn't
+                            if (profilePhotoVal && !localStorage.getItem(`ssf_photo_${userId}`)) {
+                                localStorage.setItem(`ssf_photo_${userId}`, profilePhotoVal);
+                            }
                         }
                     }
                 }
@@ -728,8 +748,8 @@
                 document.getElementById('profile-welcome-name').innerText = student.name;
                 document.getElementById('avatar-initials').innerText = student.name.substring(0, 2);
 
-                // Load saved profile picture if present
-                const savedPhoto = localStorage.getItem(`ssf_photo_${cleanId}`);
+                // Load saved profile picture from local storage or database
+                const savedPhoto = localStorage.getItem(`ssf_photo_${cleanId}`) || student.profilePhoto;
                 if (savedPhoto) {
                     applyProfilePhoto(savedPhoto);
                 } else {
@@ -834,8 +854,25 @@
             reader.onload = function(e) {
                 const base64Image = e.target.result;
                 if (activeUser && activeUser.id !== 'ADMIN') {
+                    // Save in local storage keyed by user ID so it persists across reloads for this student
                     localStorage.setItem(`ssf_photo_${activeUser.id}`, base64Image);
+                    
+                    // Update in memory database
+                    if (contestantDatabase[activeUser.id]) {
+                        contestantDatabase[activeUser.id].profilePhoto = base64Image;
+                    }
+
                     applyProfilePhoto(base64Image);
+
+                    // If a Google Apps Script action URL is configured, push update to sheet
+                    if (typeof sheetActionUrl !== 'undefined' && sheetActionUrl) {
+                        fetch(sheetActionUrl, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: activeUser.id, profilePhoto: base64Image })
+                        }).catch(err => console.log('Cloud sheet sync error:', err));
+                    }
                 }
             };
             reader.readAsDataURL(file);

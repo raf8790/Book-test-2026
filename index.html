@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Manrope & Noto Sans Malayalam -->
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- QR Code Scanner Library (html5-qrcode) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     
     <script>
         tailwind.config = {
@@ -73,7 +75,7 @@
             </div>
             <div class="hidden sm:flex items-center gap-2 bg-slate-800/80 border border-slate-700/60 rounded-full px-3 py-1.5 text-xs text-slate-300">
                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span>Online Phase Portal Active</span>
+                <span>Online Portal Active</span>
             </div>
         </div>
     </header>
@@ -130,24 +132,37 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <!-- User ID Checker Box -->
+            <!-- QR Scanner Box -->
             <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="p-2.5 rounded-xl bg-brand-500/10 text-brand-400">
-                        <i class="fa-solid fa-id-card text-lg"></i>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl bg-brand-500/10 text-brand-400">
+                            <i class="fa-solid fa-qrcode text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-200">ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാനർ</h3>
                     </div>
-                    <h3 class="font-bold text-slate-200">ഹോൾ ടിക്കറ്റ് യൂസർ ഐഡി</h3>
-                </div>
-                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-                    നിങ്ങൾക്ക് നൽകിയ ഹാള്ടിക്കറ്റിലുള്ള User ID (ഉദാഹരണത്തിന്: <span class="text-brand-300 font-mono">BTG760</span>) പരീക്ഷ ആരംഭിക്കുമ്പോൾ നൽകേണ്ടതാണ്.
-                </p>
-                <div class="flex gap-2">
-                    <input type="text" id="user-id-input" placeholder="Enter User ID (e.g. BTG760)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-500 transition-all font-mono uppercase">
-                    <button onclick="checkUserId()" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap">
-                        <span>Check</span>
+                    <button onclick="toggleScanner()" id="scanner-toggle-btn" class="text-xs bg-brand-600 hover:bg-brand-500 text-white px-3.5 py-2 rounded-xl transition-all font-semibold shadow-md">
+                        <i class="fa-solid fa-camera mr-1.5"></i> Scan QR Ticket
                     </button>
                 </div>
-                <p id="user-id-msg" class="text-xs mt-2.5 font-medium min-h-[18px]"></p>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                    ഹാൾ ടിക്കറ്റിലെ ക്യു.ആർ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ട് വിദ്യാർത്ഥിയുടെ രജിസ്ട്രേഷൻ വിവരങ്ങൾ പരിശോധിക്കുക.
+                </p>
+
+                <!-- Camera Scanner Container (Hidden by default) -->
+                <div id="qr-reader-container" class="hidden mb-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-900 p-2">
+                    <div id="reader" style="width: 100%;"></div>
+                    <button onclick="stopScanner()" class="mt-2 w-full bg-rose-600/80 hover:bg-rose-600 text-white text-xs py-2 rounded-lg font-semibold transition-all">
+                        Close Camera
+                    </button>
+                </div>
+                
+                <!-- Verification Result Card -->
+                <div id="user-id-msg" class="text-xs">
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 text-slate-400 text-center italic">
+                        ക്യു.ആർ സ്കാൻ ചെയ്യുമ്പോൾ വിദ്യാർത്ഥിയുടെ വിവരങ്ങൾ ഇവിടെ തെളിയും.
+                    </div>
+                </div>
             </div>
 
             <!-- Important Notes -->
@@ -178,6 +193,18 @@
     </footer>
 
     <script>
+        // Mock Contestant Database matching your hall tickets
+        const contestantDatabase = {
+            "BTG760": { name: "MANHA FATHIMA", place: "PERUMALABAD", gender: "FEMALE", category: "7 (SENIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG851": { name: "NUGAIBATHUL MAZNIYYA", place: "PERUMALABAD", gender: "FEMALE", category: "6 (JUNIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTB221": { name: "MUSTHAFA B", place: "HABEEB NAGAR", gender: "MALE", category: "5 (JUNIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG104": { name: "MUBEENA B", place: "HABEEB NAGAR", gender: "FEMALE", category: "7 (SENIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG540": { name: "FATHIMA B", place: "HABEEB NAGAR", gender: "FEMALE", category: "9 (SENIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTB129": { name: "MUHAMMAD VASEEN.O", place: "HABEEB NAGAR", gender: "MALE", category: "4 (JUNIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTB627": { name: "MUHAMMED FARHAN", place: "PERUMALABAD", gender: "MALE", category: "4 (JUNIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" },
+            "BTG902": { name: "HADIYA. PK", place: "HABEEB NAGAR", gender: "FEMALE", category: "10 (SENIOR)", venue: "MADRASATHUL IMAN, EDAKKOM" }
+        };
+
         // Target Date: October 15, 2026 at 20:00:00 (8:00 PM)
         const targetDate = new Date("October 15, 2026 20:00:00").getTime();
 
@@ -196,17 +223,15 @@
                 document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
                 document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
             } else {
-                // Exam Time Reached!
                 document.getElementById('days').innerText = "00";
                 document.getElementById('hours').innerText = "00";
                 document.getElementById('minutes').innerText = "00";
                 document.getElementById('seconds').innerText = "00";
 
-                // Update Action Area with Start Button
                 const actionArea = document.getElementById('action-area');
                 actionArea.innerHTML = `
                     <div class="animate-bounce">
-                        <a href="#" id="exam-start-btn" onclick="alert('ഒക്ടോബർ 15 ന് പരീക്ഷാ ലിങ്ക് ഇവിടെ ആക്റ്റീവാകുന്നതാണ്!'); return false;" class="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-base py-4 px-8 rounded-2xl shadow-xl transition-all transform active:scale-95">
+                        <a href="#" onclick="alert('ഒക്ടോബർ 15 ന് പരീക്ഷാ ലിങ്ക് ഇവിടെ ആക്റ്റീവാകുന്നതാണ്!'); return false;" class="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-base py-4 px-8 rounded-2xl shadow-xl transition-all">
                             <i class="fa-solid fa-pen-to-square"></i>
                             <span>പരീക്ഷ ആരംഭിക്കുക (START EXAM)</span>
                         </a>
@@ -215,30 +240,89 @@
             }
         }
 
-        // Initialize timer
         setInterval(updateTimer, 1000);
         updateTimer();
 
-        // User ID Checker Verification Logic
-        function checkUserId() {
-            const input = document.getElementById('user-id-input').value.trim().toUpperCase();
-            const msg = document.getElementById('user-id-msg');
+        // QR Scanner Management
+        let html5QrCode = null;
+        let isScannerOpen = false;
 
-            if (!input) {
-                msg.className = "text-xs mt-2.5 font-medium text-rose-400";
-                msg.innerText = "ദയവായി നിങ്ങളുടെ User ID പ്രവേശിക്കുക.";
-                return;
-            }
+        function toggleScanner() {
+            const container = document.getElementById('qr-reader-container');
+            const toggleBtn = document.getElementById('scanner-toggle-btn');
 
-            if (input.startsWith('BT')) {
-                msg.className = "text-xs mt-2.5 font-medium text-emerald-400";
-                msg.innerText = `✓ User ID (${input}) അംഗീകരിച്ചു. ഒക്ടോബർ 15 ന് രാത്രി 8 മണിക്ക് തയ്യാറായിരിക്കുക.`;
+            if (!isScannerOpen) {
+                container.classList.remove('hidden');
+                toggleBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Starting...';
+                
+                html5QrCode = new Html5Qrcode("reader");
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 200, height: 200 } },
+                    (decodedText) => {
+                        // Successfully scanned QR code content
+                        const scannedCode = decodedText.trim().toUpperCase();
+                        verifyScannedData(scannedCode);
+                        stopScanner();
+                    },
+                    (errorMessage) => {
+                        // Scanning in progress...
+                    }
+                ).then(() => {
+                    isScannerOpen = true;
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-camera-rotate mr-1"></i> Scanning...';
+                }).catch(err => {
+                    alert("കാമറ ആക്സസ് ചെയ്യാൻ കഴിഞ്ഞില്ല. ദയവായി അനുമതി നൽകുക.");
+                    container.classList.add('hidden');
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-camera mr-1"></i> Scan QR Ticket';
+                });
             } else {
-                msg.className = "text-xs mt-2.5 font-medium text-amber-400";
-                msg.innerText = "സാധുവായ ഐഡി രേഖപ്പെടുത്തുക (ഉദാഹരണത്തിന്: BTG760 അല്ലെങ്കിൽ BTB129).";
+                stopScanner();
+            }
+        }
+
+        function stopScanner() {
+            if (html5QrCode && isScannerOpen) {
+                html5QrCode.stop().then(() => {
+                    isScannerOpen = false;
+                    document.getElementById('qr-reader-container').classList.add('hidden');
+                    document.getElementById('scanner-toggle-btn').innerHTML = '<i class="fa-solid fa-camera mr-1"></i> Scan QR Ticket';
+                }).catch(err => {
+                    console.error("Failed to stop scanner", err);
+                });
+            } else {
+                isScannerOpen = false;
+                document.getElementById('qr-reader-container').classList.add('hidden');
+                document.getElementById('scanner-toggle-btn').innerHTML = '<i class="fa-solid fa-camera mr-1"></i> Scan QR Ticket';
+            }
+        }
+
+        // Contestant Data Verification via QR
+        function verifyScannedData(code) {
+            const msg = document.getElementById('user-id-msg');
+            const student = contestantDatabase[code];
+
+            if (student) {
+                msg.innerHTML = `
+                    <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200">
+                        <div class="flex items-center justify-between font-bold text-emerald-400 mb-1">
+                            <span>✓ Verified: ${student.name}</span>
+                            <span class="text-xs bg-emerald-500/20 px-2 py-0.5 rounded">${code}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300">കാറ്റഗറി: ${student.category} | സ്ഥലം: ${student.place}</p>
+                        <p class="text-[11px] text-brand-300 mt-0.5">വേദി: ${student.venue}</p>
+                    </div>
+                `;
+            } else {
+                msg.innerHTML = `
+                    <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                        <span class="font-bold">⚠️ ${code}:</span> കൃത്യമായ യൂസർ ഐ.ഡി ലഭ്യമല്ല. ദയവായി ശരിയായ ഹോൾ ടിക്കറ്റ് സ്കാൻ ചെയ്യുക.
+                    </div>
+                `;
             }
         }
     </script>
 </body>
 </html>
 ```
+@@eof

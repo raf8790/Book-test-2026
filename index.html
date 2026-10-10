@@ -76,7 +76,6 @@
 
     <main class="max-w-4xl mx-auto px-4 py-8 w-full flex-grow">
         
-        <!-- PUBLIC VIEW (Landing & QR scanner) -->
         <div id="public-view" class="space-y-8">
             <!-- Hero Banner Card -->
             <div class="glass-card rounded-3xl p-6 sm:p-8 text-center relative overflow-hidden shadow-2xl">
@@ -170,7 +169,7 @@
                         </button>
                     </div>
 
-                    <!-- Password Login Form (No Manual User ID Input) -->
+                    <!-- Password Login Form -->
                     <form onsubmit="handleManualLogin(event)" class="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-700/60">
                         <div>
                             <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">സ്കാൻ ചെയ്ത യൂസർ ഐ.ഡി (User ID)</label>
@@ -200,6 +199,7 @@
                         <ul class="text-xs text-slate-300 space-y-2.5 list-disc list-inside leading-relaxed">
                             <li>നിങ്ങൾക്ക് ലഭിച്ച ഹാൾ ടിക്കറ്റിലെ ക്യു.ആർ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ട് യൂസർ ഐഡി സ്വയമേവ വരുത്തുക.</li>
                             <li>നിങ്ങളുടെ പ്രൊഫൈലിൽ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്ത് ഹാൾ ടിക്കറ്റ് കൂടുതൽ വ്യക്തിഗതമാക്കാം.</li>
+                            <li>ലോഗിൻ ചെയ്ത ശേഷം ദിവസേന വായിക്കുന്ന വിവരങ്ങളും പ്രധാന കുറപ്പുകളും രേഖപ്പെടുത്താവുന്നതാണ്.</li>
                             <li>ഓൺലൈൻ ടെസ്റ്റ് ഒക്ടോബർ 15 വ്യാഴാഴ്ച കൃത്യം 8:00 മണിക്ക് ആരംഭിക്കും.</li>
                             <li>ഓഫ്‌ലൈൻ ടെസ്റ്റ് ഒക്ടോബർ 17 ശനിയാഴ്ച വൈകുന്നേരം 3:00 മണിക്ക് <strong>മദ്റസത്തുൽ ഈമാൻ, ഇടക്കോം</strong> വേദിയിൽ നടക്കും.</li>
                         </ul>
@@ -327,9 +327,63 @@
                 </div>
 
             </div>
+
+            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-700/80 pb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+                            <i class="fa-solid fa-book-bookmark text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-100 text-sm sm:text-base">ദിനാധിഷ്ഠിത വായനാ പുരോഗതി & കുറപ്പുകൾ</h3>
+                            <p class="text-[11px] text-slate-400">ഓരോ ദിവസവും വായിച്ച പേജുകളും പ്രധാനപ്പെട്ട പോയിന്റുകളും ഇവിടെ രേഖപ്പെടുത്താം</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Reading Log Form -->
+                <form onsubmit="handleSaveReadingLog(event)" class="bg-slate-900/80 border border-slate-700/60 p-4 sm:p-5 rounded-2xl space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">തീയതി (Date)</label>
+                            <input type="date" id="reading-date" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">വായിച്ച പേജുകൾ (ഉദാ: 1 - 15)</label>
+                            <input type="text" id="reading-pages" placeholder="എത്ര മുതൽ എത്ര വരെ" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">ആകെ വായിച്ച പേജുകൾ</label>
+                            <input type="number" id="reading-total-count" placeholder="ഉദാ: 15" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">പ്രധാനപ്പെട്ട ഭാഗങ്ങൾ / കുറിപ്പുകൾ (Notes)</label>
+                        <textarea id="reading-notes" rows="3" placeholder="വായിച്ച ഭാഗത്തെ പ്രധാന വിവരങ്ങൾ, ചരിത്ര സംഭവങ്ങൾ, പ്രധാനപ്പെട്ട പോയിന്റുകൾ എന്നിവ എഴുതുക..." required class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500 leading-relaxed"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div id="reading-log-msg" class="text-xs font-semibold"></div>
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> സേവ് ചെയ്യുക (Save Entry)
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Saved Reading History -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-extrabold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-brand-400"></i> രേഖപ്പെടുത്തിയ വായനാ ദിനങ്ങൾ
+                    </h4>
+
+                    <div id="reading-logs-container" class="space-y-3">
+                        <!-- Reading items rendered dynamically -->
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- ADMIN DASHBOARD VIEW -->
         <div id="admin-view" class="hidden space-y-6">
             <!-- Admin Header -->
             <div class="flex items-center justify-between bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl backdrop-blur-sm">
@@ -392,17 +446,38 @@ function doPost(e) {
 }
                     </pre>
                 </details>
-                <!-- Admin Data Stats & Search -->
+
+                <!-- Admin Data Stats & Advanced Search Filters -->
                 <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 sm:p-6 backdrop-blur-sm space-y-4">
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div class="relative w-full sm:w-72">
-                            <input type="text" id="admin-search-input" onkeyup="renderAdminTable()" placeholder="പേര്, User ID, സ്ഥലം തിരയുക..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 pl-9 text-xs text-white focus:outline-none focus:border-amber-500">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="relative">
+                            <input type="text" id="admin-search-input" onkeyup="renderAdminTable()" placeholder="പേര്, User ID, സ്ഥലം..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 pl-9 text-xs text-white focus:outline-none focus:border-amber-500">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
                         </div>
-                        <div class="text-xs text-slate-400 flex items-center gap-4">
-                            <span>ആകെ രജിസ്ട്രേഷനുകൾ: <strong id="admin-total-count" class="font-bold text-amber-400 text-sm">0</strong></span>
-                            <span>ഫോട്ടോ അപ്‌ലോഡ് ചെയ്തവർ: <strong id="admin-photo-count" class="font-bold text-emerald-400 text-sm">0</strong></span>
+
+                        <!-- Gender Filter Dropdown -->
+                        <div>
+                            <select id="admin-filter-gender" onchange="renderAdminTable()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500 font-semibold">
+                                <option value="ALL">എല്ലാ ലിംഗഭേദവും (All Genders)</option>
+                                <option value="Male">ആൺകുട്ടികൾ (Male)</option>
+                                <option value="Female">പെൺകുട്ടികൾ (Female)</option>
+                            </select>
                         </div>
+
+                        <!-- Category Filter Dropdown -->
+                        <div>
+                            <select id="admin-filter-category" onchange="renderAdminTable()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500 font-semibold">
+                                <option value="ALL">എല്ലാ കാറ്റഗറിയും (All Categories)</option>
+                                <option value="Junior">Junior</option>
+                                <option value="Senior">Senior</option>
+                                <option value="Sub Junior">Sub Junior</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-slate-400 flex items-center justify-between border-t border-slate-800 pt-3">
+                        <span>കാണിക്കുന്ന ഫലങ്ങൾ: <strong id="admin-total-count" class="font-bold text-amber-400 text-sm">0</strong></span>
+                        <span>ഫോട്ടോ അപ്‌ലോഡ് ചെയ്തവർ: <strong id="admin-photo-count" class="font-bold text-emerald-400 text-sm">0</strong></span>
                     </div>
 
                     <!-- Admin Table -->
@@ -417,6 +492,7 @@ function doPost(e) {
                                     <th class="p-3">സ്ഥലം</th>
                                     <th class="p-3">ലിംഗഭേദം</th>
                                     <th class="p-3">കാറ്റഗറി</th>
+                                    <th class="p-3">വായനാ പുരോഗതി</th>
                                     <th class="p-3">പാസ്‌വേഡ്</th>
                                     <th class="p-3 text-center">Action</th>
                                 </tr>
@@ -434,7 +510,7 @@ function doPost(e) {
 
     <!-- ADMIN PHOTO VIEW MODAL -->
     <div id="photo-preview-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
-        <div class="glass-card max-w-sm w-full rounded-2xl p-5 border border-brand-500/30 shadow-2xl relative text-center animate-fade-in">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-5 border border-brand-500/30 shadow-2xl relative text-center">
             <button onclick="closePhotoModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -451,7 +527,7 @@ function doPost(e) {
 
     <!-- ADMIN LOGIN MODAL -->
     <div id="admin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
-        <div class="glass-card max-w-sm w-full rounded-2xl p-6 border border-amber-500/30 shadow-2xl relative animate-fade-in">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-6 border border-amber-500/30 shadow-2xl relative">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -482,15 +558,12 @@ function doPost(e) {
     </footer>
 
     <script>
-        // Data Feed Endpoint (Published Google Sheet CSV Exporter)
+        // Data Feed Endpoint
         const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc0uKR34rIFoSlyG-3uMSLr-53gIbXI6oB2raiWPvzlVblXHNmRZBsolOpnRNkpt0-4lgFs6rc1rkF/pub?output=csv";
 
-        // Google Sheet Apps Script Web App URL for writing back profile photos / data if available (optional endpoint)
-        let sheetActionUrl = ""; // Add your Web App URL here to sync photo changes directly into Column O
+        let sheetActionUrl = ""; 
+        let adminPassword = "123";
 
-        let adminPassword = "123"; // Default Admin Password from sheet settings
-
-        // 10 Key Facts about Shaikh Abdul Qadir Jeelani (r)
         const jeelaniFacts = [
             "ശൈഖ് അബ്ദുൽ ഖാദിർ ജീലാനി (റ) ഹിജ്റ 470-ൽ പേർഷ്യയിലെ 'ജീലാൻ' എന്ന സ്ഥലത്താണ് ജനിച്ചത്.",
             "അവിടുന്ന് തിരുനബി (സ) തങ്ങളുടെ പേരക്കുട്ടിയായ ഹസൻ (റ), ഹുസൈൻ (റ) വഴി കുടുംബപരമ്പര എത്തുന്ന സയ്യിദാണ്.",
@@ -525,9 +598,7 @@ function doPost(e) {
             }, 300);
         }
 
-        // Countdown Timer Implementation for October 15, 2026, 8:00 PM
         function initCountdownTimer() {
-            // Target date: October 15, 2026 at 20:00:00 (8:00 PM)
             const targetDate = new Date('2026-10-15T20:00:00').getTime();
 
             const updateTimer = () => {
@@ -572,10 +643,13 @@ function doPost(e) {
         window.addEventListener('DOMContentLoaded', () => {
             initFactSlider();
             initCountdownTimer();
+            // Set today as default date in reading log
+            const dateInput = document.getElementById('reading-date');
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
             checkExistingSession();
         });
 
-        // Default Database
+        // Database
         let contestantDatabase = {
             "BTG760": { name: "Manha Fathima", place: "Perumalabad", gender: "Female", class: "", category: "7 Senior", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "786313" },
             "BTG851": { name: "Nusaibathul Mazniyya", place: "Perumalabad", gender: "Female", class: "", category: "6 Junior", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "sajida" },
@@ -590,7 +664,6 @@ function doPost(e) {
             "BTG351": { name: "Ayisha Razana Ak", place: "Perumalabad", gender: "Female", class: "", category: "6 Junior", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "123456" }
         };
 
-        // Parse CSV string safely
         function parseCSV(text) {
             const lines = text.split(/\r\n|\n/);
             const result = [];
@@ -619,7 +692,6 @@ function doPost(e) {
             return result;
         }
 
-        // Fetch Live Data from Google Sheet
         async function fetchSheetData() {
             try {
                 const response = await fetch(`${sheetCsvUrl}&t=${new Date().getTime()}`);
@@ -633,7 +705,6 @@ function doPost(e) {
                         startIndex = 1;
                     }
 
-                    // Check for Admin Password in Column D/E row 2
                     for (let i = 0; i < rows.length; i++) {
                         const row = rows[i];
                         if (row && row[3] && row[3].toLowerCase().includes("admin password") && row[4]) {
@@ -655,7 +726,6 @@ function doPost(e) {
                         const categoryName = (row[6] || '');
                         const passwordVal = (row[8] || '123456');
                         
-                        // Explicitly check Column O (index 14) for Profile Photo URL/Base64, fallback to checking other columns if offset
                         let profilePhotoVal = '';
                         if (row[14] && (row[14].startsWith('http') || row[14].startsWith('data:image') || row[14].length > 30)) {
                             profilePhotoVal = row[14].trim();
@@ -690,7 +760,6 @@ function doPost(e) {
                                 profilePhoto: profilePhotoVal 
                             };
                             
-                            // Sync with local storage if sheet photo exists and local doesn't
                             if (profilePhotoVal && !localStorage.getItem(`ssf_photo_${userId}`)) {
                                 localStorage.setItem(`ssf_photo_${userId}`, profilePhotoVal);
                             }
@@ -764,6 +833,9 @@ function doPost(e) {
         function renderAdminTable() {
             const tbody = document.getElementById('admin-table-body');
             const searchVal = (document.getElementById('admin-search-input').value || '').toLowerCase();
+            const genderFilter = document.getElementById('admin-filter-gender').value;
+            const categoryFilter = document.getElementById('admin-filter-category').value;
+
             const activeListContainer = document.getElementById('active-users-list');
             const activeBadge = document.getElementById('active-sessions-count-badge');
             
@@ -798,11 +870,25 @@ function doPost(e) {
 
             keys.forEach(id => {
                 const user = contestantDatabase[id];
-                if (
-                    id.toLowerCase().includes(searchVal) ||
-                    user.name.toLowerCase().includes(searchVal) ||
-                    user.place.toLowerCase().includes(searchVal)
-                ) {
+
+                // Check Gender Filter
+                let matchesGender = true;
+                if (genderFilter !== 'ALL') {
+                    matchesGender = (user.gender || '').toLowerCase().trim() === genderFilter.toLowerCase().trim();
+                }
+
+                // Check Category Filter
+                let matchesCategory = true;
+                if (categoryFilter !== 'ALL') {
+                    matchesCategory = (user.category || '').toLowerCase().includes(categoryFilter.toLowerCase().trim());
+                }
+
+                // Check Search Filter
+                const matchesSearch = id.toLowerCase().includes(searchVal) ||
+                                      user.name.toLowerCase().includes(searchVal) ||
+                                      user.place.toLowerCase().includes(searchVal);
+
+                if (matchesGender && matchesCategory && matchesSearch) {
                     count++;
                     const userPhoto = localStorage.getItem(`ssf_photo_${id}`) || user.profilePhoto;
                     if (userPhoto) photoCount++;
@@ -813,6 +899,14 @@ function doPost(e) {
                         : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-500 border border-slate-700">Offline</span>`;
 
                     const currentPass = localStorage.getItem(`ssf_pass_${id}`) || user.pass || '123456';
+
+                    // Calculate student reading progress
+                    const userLogs = JSON.parse(localStorage.getItem(`ssf_reading_logs_${id}`) || '[]');
+                    let progressText = '0 Logs';
+                    if (userLogs.length > 0) {
+                        const totalPages = userLogs.reduce((acc, curr) => acc + (parseInt(curr.total) || 0), 0);
+                        progressText = `<span class="text-emerald-400 font-bold">${totalPages} Pages</span> (${userLogs.length} days)`;
+                    }
 
                     const photoHtml = userPhoto 
                         ? `<img src="${userPhoto}" onclick="openPhotoModal('${user.name}', '${id}', '${userPhoto}')" class="w-10 h-10 rounded-xl object-cover border border-brand-400 shadow cursor-pointer hover:scale-105 transition-transform">` 
@@ -826,8 +920,9 @@ function doPost(e) {
                         <td class="p-3 font-mono font-bold text-amber-400">${id}</td>
                         <td class="p-3 font-semibold text-white">${user.name}</td>
                         <td class="p-3">${user.place}</td>
-                        <td class="p-3">${user.gender}</td>
-                        <td class="p-3">${user.category}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-[11px] font-semibold">${user.gender}</span></td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded bg-brand-500/10 text-brand-300 border border-brand-500/20 text-[11px] font-semibold">${user.category}</span></td>
+                        <td class="p-3 text-[11px]">${progressText}</td>
                         <td class="p-3 font-mono text-emerald-400 font-semibold">${currentPass}</td>
                         <td class="p-3 text-center">
                             ${userPhoto ? `<button onclick="openPhotoModal('${user.name}', '${id}', '${userPhoto}')" class="bg-brand-600/30 hover:bg-brand-600 text-brand-300 hover:text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all"><i class="fa-solid fa-image mr-1"></i> View</button>` : `<span class="text-slate-600 text-[10px]">No Photo</span>`}
@@ -839,6 +934,19 @@ function doPost(e) {
 
             document.getElementById('admin-total-count').innerText = count;
             document.getElementById('admin-photo-count').innerText = photoCount;
+        }
+
+        function openPhotoModal(name, id, photoUrl) {
+            document.getElementById('modal-user-name').innerText = name;
+            document.getElementById('modal-user-id').innerText = id;
+            document.getElementById('modal-photo-img').src = photoUrl;
+            document.getElementById('photo-preview-modal').classList.remove('hidden');
+            document.getElementById('photo-preview-modal').classList.add('flex');
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photo-preview-modal').classList.add('hidden');
+            document.getElementById('photo-preview-modal').classList.remove('flex');
         }
 
         function registerActiveSession(userId) {
@@ -888,6 +996,89 @@ function doPost(e) {
             msgBox.innerText = "പാസ്‌വേഡ് വിജയകരമായി അപ്‌ഡേറ്റ് ചെയ്തു!";
         }
 
+        function handleSaveReadingLog(e) {
+            e.preventDefault();
+            if (!activeUser || activeUser.id === 'ADMIN') return;
+
+            const date = document.getElementById('reading-date').value;
+            const pages = document.getElementById('reading-pages').value.trim();
+            const total = document.getElementById('reading-total-count').value.trim();
+            const notes = document.getElementById('reading-notes').value.trim();
+            const msgBox = document.getElementById('reading-log-msg');
+
+            const logEntry = {
+                id: Date.now().toString(),
+                date,
+                pages,
+                total,
+                notes,
+                timestamp: new Date().toLocaleDateString('en-GB')
+            };
+
+            const existingLogs = JSON.parse(localStorage.getItem(`ssf_reading_logs_${activeUser.id}`) || '[]');
+            existingLogs.unshift(logEntry);
+            localStorage.setItem(`ssf_reading_logs_${activeUser.id}`, JSON.stringify(existingLogs));
+
+            document.getElementById('reading-pages').value = '';
+            document.getElementById('reading-total-count').value = '';
+            document.getElementById('reading-notes').value = '';
+
+            msgBox.className = "text-xs font-semibold text-emerald-400";
+            msgBox.innerText = "വായനാ വിവരങ്ങൾ വിജയകരമായി സേവ് ചെയ്തു!";
+
+            setTimeout(() => { msgBox.innerText = ''; }, 3000);
+            renderReadingLogs();
+        }
+
+        function renderReadingLogs() {
+            const container = document.getElementById('reading-logs-container');
+            if (!container || !activeUser || activeUser.id === 'ADMIN') return;
+
+            const logs = JSON.parse(localStorage.getItem(`ssf_reading_logs_${activeUser.id}`) || '[]');
+
+            if (logs.length === 0) {
+                container.innerHTML = `
+                    <div class="p-4 rounded-xl bg-slate-900/50 border border-slate-800 text-center text-slate-500 text-xs">
+                        ഇതുവരെ വായനാ കുറിപ്പുകൾ ഒന്നും ചേർത്തിട്ടില്ല. മുകളിലെ ഫോം ഉപയോഗിച്ച് ദിവസേന വായന രേഖപ്പെടുത്തുക.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+            logs.forEach(log => {
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2 relative shadow-md";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-xs border-b border-slate-800 pb-2">
+                        <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+                            <i class="fa-regular fa-calendar-check"></i> ${log.date}
+                        </span>
+                        <div class="flex items-center gap-3">
+                            <span class="bg-brand-500/10 text-brand-300 border border-brand-500/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                പേജ്: ${log.pages} (${log.total} പേജുകൾ)
+                            </span>
+                            <button onclick="deleteReadingLog('${log.id}')" class="text-rose-400 hover:text-rose-300 text-xs">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-200 leading-relaxed whitespace-pre-line font-medium pt-1">
+                        ${log.notes}
+                    </p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function deleteReadingLog(logId) {
+            if (!activeUser || activeUser.id === 'ADMIN') return;
+            let logs = JSON.parse(localStorage.getItem(`ssf_reading_logs_${activeUser.id}`) || '[]');
+            logs = logs.filter(l => l.id !== logId);
+            localStorage.setItem(`ssf_reading_logs_${activeUser.id}`, JSON.stringify(logs));
+            renderReadingLogs();
+        }
+
         // Login & Session Management
         let activeUser = null;
 
@@ -935,13 +1126,16 @@ function doPost(e) {
                 const passMsgBox = document.getElementById('pass-change-msg');
                 if (passMsgBox) passMsgBox.innerText = '';
 
-                // Load saved profile picture from local storage or database
+                // Load candidate profile picture
                 const savedPhoto = localStorage.getItem(`ssf_photo_${cleanId}`) || student.profilePhoto;
                 if (savedPhoto) {
                     applyProfilePhoto(savedPhoto);
                 } else {
                     resetProfilePhoto();
                 }
+
+                // Load candidate reading history logs
+                renderReadingLogs();
 
                 // Update Navbar
                 document.getElementById('nav-auth-status').innerHTML = `
@@ -1045,17 +1239,14 @@ function doPost(e) {
             reader.onload = function(e) {
                 const base64Image = e.target.result;
                 if (activeUser && activeUser.id !== 'ADMIN') {
-                    // Save in local storage keyed by user ID
                     localStorage.setItem(`ssf_photo_${activeUser.id}`, base64Image);
                     
-                    // Update in memory database
                     if (contestantDatabase[activeUser.id]) {
                         contestantDatabase[activeUser.id].profilePhoto = base64Image;
                     }
 
                     applyProfilePhoto(base64Image);
 
-                    // Sync update to Google Sheet Column O
                     if (sheetActionUrl) {
                         fetch(sheetActionUrl, {
                             method: 'POST',

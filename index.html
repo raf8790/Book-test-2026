@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSF Perumalabad Unit - Book Test '26 Portal</title>
+    <title>SSF Perumalabad Unit - Book Test 2026 Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -62,7 +62,7 @@
                 </div>
                 <div>
                     <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white leading-tight">SSF PERUMALABAD UNIT</h1>
-                    <p class="text-[11px] text-brand-400 font-semibold tracking-wide uppercase">Book Test '26 Portal</p>
+                    <p class="text-[11px] text-brand-400 font-semibold tracking-wide uppercase">ബുക്ക് ടെസ്റ്റ് 2026 Portal</p>
                 </div>
             </div>
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -232,7 +232,7 @@
             return result;
         }
 
-        // Fetch Live Data silently
+        // Fetch Live Data silently from Google Sheet
         async function fetchSheetData() {
             try {
                 const response = await fetch(`${sheetCsvUrl}&t=${new Date().getTime()}`);

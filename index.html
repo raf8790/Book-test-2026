@@ -197,7 +197,7 @@
     </footer>
 
     <script>
-        // Google Sheet CSV Feed URL
+        // Data Feed Endpoint (Masked Google Sheet CSV Exporter)
         const sheetId = "1OdJB9UhFBaKwl_QTBEr8jn5wqAyuNCxlNsrARjemGBk";
         const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
 
@@ -211,7 +211,6 @@
                 const line = lines[i].trim();
                 if (!line) continue;
                 
-                // Regular expression to handle CSV cells with quotes and commas
                 const row = [];
                 let insideQuotes = false;
                 let cell = '';
@@ -233,29 +232,26 @@
             return result;
         }
 
-        // Fetch Live Data from Google Sheet
+        // Fetch Live Data silently
         async function fetchSheetData() {
             try {
-                // Fetching fresh sheet data without cache
                 const response = await fetch(`${sheetCsvUrl}&t=${new Date().getTime()}`);
-                if (!response.ok) throw new Error("Sheet Network Response Failed");
+                if (!response.ok) throw new Error("Server Sync Failed");
                 const csvData = await response.text();
                 const rows = parseCSV(csvData);
 
                 if (rows.length > 0) {
                     const db = {};
                     
-                    // Determine headers line vs data lines
                     let startIndex = 0;
                     if (rows[0] && (rows[0][0].toLowerCase().includes("id") || rows[0][0].toLowerCase().includes("user"))) {
-                        startIndex = 1; // Header row exists
+                        startIndex = 1;
                     }
 
                     for (let i = startIndex; i < rows.length; i++) {
                         const row = rows[i];
                         if (!row || row.length < 2) continue;
                         
-                        // Extract fields with dynamic fallbacks
                         const userId = (row[0] || '').trim().toUpperCase();
                         const name = row[1] || 'N/A';
                         const place = row[2] || 'PERUMALABAD';
@@ -270,11 +266,11 @@
                     contestantDatabase = db;
                 }
             } catch (error) {
-                console.warn("Could not fetch Google Sheet CSV, relying on cached data.", error);
+                console.warn("Sync temporarily unavailable.", error);
             }
         }
 
-        // Initial Load of Sheet Data
+        // Initial Load of Data
         fetchSheetData();
 
         // Target Date: October 15, 2026 at 20:00:00 (8:00 PM)
@@ -290,7 +286,6 @@
                 document.getElementById("minutes").innerText = "00";
                 document.getElementById("seconds").innerText = "00";
                 
-                // Show Exam Active Box
                 const quizBox = document.getElementById("quiz-status-box");
                 quizBox.className = "p-4 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-semibold max-w-lg mx-auto flex flex-col items-center justify-center gap-2";
                 quizBox.innerHTML = `
@@ -316,7 +311,6 @@
             document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
         }
 
-        // Run Timer
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
@@ -324,24 +318,21 @@
         async function verifyScannedData(code) {
             const msg = document.getElementById('user-id-msg');
             
-            // Show scanning / loading status
             msg.innerHTML = `
                 <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 text-slate-300 text-center animate-pulse">
                     <i class="fa-solid fa-arrows-rotate fa-spin text-brand-400 text-xl mb-2 block"></i>
-                    വിവരങ്ങൾ ഗൂഗിൾ ഷീറ്റിൽ നിന്ന് ശേഖരിക്കുന്നു... (${code})
+                    വിവരങ്ങൾ തൽസമയം പരിശോധിക്കുന്നു... (${code})
                 </div>
             `;
 
-            // Re-fetch data to guarantee any new User ID added to Google Sheet is fetched live
+            // Always fetch live data before verifying
             await fetchSheetData();
 
             const student = contestantDatabase[code];
 
             if (student) {
-                // Render exact Replica / Formatted Digital Hall Ticket Card
                 msg.innerHTML = `
                     <div class="bg-slate-900/90 border border-brand-500/40 rounded-2xl p-4 text-slate-200 shadow-xl relative overflow-hidden">
-                        <!-- Card Top Accent -->
                         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-brand-500 to-blue-500"></div>
                         
                         <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
@@ -356,7 +347,6 @@
                             </span>
                         </div>
 
-                        <!-- Student Data Grid -->
                         <div class="grid grid-cols-2 gap-2 text-xs mb-3">
                             <div>
                                 <span class="text-[10px] text-slate-500 uppercase font-bold block">NAME / പേര്</span>
@@ -376,7 +366,6 @@
                             </div>
                         </div>
 
-                        <!-- Venue Info Box -->
                         <div class="bg-slate-800/80 rounded-xl p-2.5 border border-slate-700/60 flex items-center gap-2.5 text-[11px] text-slate-300">
                             <i class="fa-solid fa-location-dot text-amber-400 text-sm"></i>
                             <div>
@@ -390,13 +379,13 @@
                 msg.innerHTML = `
                     <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-center">
                         <i class="fa-solid fa-triangle-exclamation text-xl mb-1 block"></i>
-                        <span class="font-bold">⚠️ ${code}:</span> ഗൂഗിൾ ഷീറ്റിൽ ഈ യൂസർ ഐ.ഡി കണ്ടെത്താനായില്ല. ദയവായി ശരിയായ ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാൻ ചെയ്യുക.
+                        <span class="font-bold">⚠️ ${code}:</span> സർവറിൽ ഈ യൂസർ ഐ.ഡി കണ്ടെത്താനായില്ല. ദയവായി ശരിയായ ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാൻ ചെയ്യുക.
                     </div>
                 `;
             }
         }
 
-        // HTML5 QR Code Scanner Integration
+        // QR Code Scanner Control
         let html5QrcodeScanner = null;
 
         function toggleScanner() {
@@ -420,17 +409,15 @@
                 { facingMode: "environment" },
                 config,
                 (decodedText) => {
-                    // On Success
                     stopScanner();
                     const cleanCode = decodedText.trim().toUpperCase();
                     verifyScannedData(cleanCode);
                 },
                 (errorMessage) => {
-                    // Scanning ongoing...
+                    // Scanning...
                 }
             ).catch(err => {
                 console.error("Camera access failed", err);
-                alert("ക്യാമറ ആക്സസ് ചെയ്യാനായില്ല. ക്യാമറ പെർമിഷൻ നൽകിയിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുക.");
             });
         }
 
@@ -438,7 +425,7 @@
             if (html5QrcodeScanner) {
                 html5QrcodeScanner.stop().then(() => {
                     document.getElementById('qr-reader-container').classList.add('hidden');
-                }).catch(err => {
+                }).catch(() => {
                     document.getElementById('qr-reader-container').classList.add('hidden');
                 });
             } else {

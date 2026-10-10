@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ml">
 <head>
@@ -90,6 +91,21 @@
             <p class="text-slate-400 text-xs sm:text-sm font-medium mb-6">
                 രചന: സയ്യിദ് സ്വലാഹുദ്ദീൻ ബുഖാരി
             </p>
+
+            <!-- Shaikh Jeelani (r) 10 Facts Slider -->
+            <div class="mb-6 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-5 max-w-lg mx-auto text-left relative overflow-hidden shadow-lg">
+                <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
+                    <span class="text-[11px] font-bold text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-book-open text-emerald-400"></i> ശൈഖ് ജീലാനി (റ): പ്രധാന വിവരങ്ങൾ
+                    </span>
+                </div>
+                
+                <div class="min-h-[64px] flex items-center justify-center text-center py-1">
+                    <p id="fact-text" class="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed transition-opacity duration-500 opacity-100">
+                        <!-- Dynamic Slider Content -->
+                    </p>
+                </div>
+            </div>
 
             <!-- Countdown Timer Container -->
             <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-6 mb-6 shadow-inner max-w-lg mx-auto">
@@ -200,6 +216,43 @@
         // Data Feed Endpoint (Google Sheet CSV Exporter)
         const sheetId = "1OdJB9UhFBaKwl_QTBEr8jn5wqAyuNCxlNsrARjemGBk";
         const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+
+        // 10 Key Facts about Shaikh Abdul Qadir Jeelani (r) without numbering
+        const jeelaniFacts = [
+            "ശൈഖ് അബ്ദുൽ ഖാദിർ ജീലാനി (റ) ഹിജ്റ 470-ൽ പേർഷ്യയിലെ 'ജീലാൻ' എന്ന സ്ഥലത്താണ് ജനിച്ചത്.",
+            "അവിടുന്ന് തിരുനബി (സ) തങ്ങളുടെ പേരക്കുട്ടിയായ ഹസൻ (റ), ഹുസൈൻ (റ) വഴി കുടുംബപരമ്പര എത്തുന്ന സയ്യിദാണ്.",
+            "ചെറുപ്പത്തിൽ തന്നെ മാതാവ് ഫാത്തിമ (റ) സത്യസന്ധതയുടെ പ്രാധാന്യം പഠിപ്പിച്ച് ബഗ്ദാദിലേക്ക് പഠനത്തിന് അയച്ചു.",
+            "വഴിയിൽ വെച്ച് കവർച്ചക്കാർ പിടികൂടിയപ്പോൾ സത്യം മാത്രം പറഞ്ഞ് അവരുടെ മനസ്സുമാറ്റിയ പ്രശസ്തമായ സംഭവം അവിടുത്തെ ജീവിതത്തിലേതാണ്.",
+            "ബഗ്ദാദിൽ അക്കാലത്തുണ്ടായിരുന്ന പ്രമുഖരായ പണ്ഡിതന്മാരിൽ നിന്നാണ് അവിടുന്ന് ഇസ്ലാമിക വിജ്ഞാനങ്ങൾ നേടിയത്.",
+            "'മുഹ്‌യിദ്ദീൻ' (ദീനിനെ പുനരുജ്ജീവിപ്പിച്ചയാൾ), 'സുൽത്താനുൽ ഔലിയാ' (ഔലിയാക്കളുടെ സുൽത്താൻ) എന്നീ പേരുകളിൽ അവിടുന്ന് അറിയപ്പെടുന്നു.",
+            "ഖാദിരിയ്യ ത്വരീഖത്തിന്റെ സ്ഥാപകനായ മഹാനവർകൾ ലക്ഷക്കണക്കിന് ആളുകളെ സന്മാർഗ്ഗത്തിലേക്ക് നയിച്ചു.",
+            "'അൽ ഫുതൂഹുൽ ഗൈബ്', 'ഗുൻയതുത്ത്വാലിബീൻ' തുടങ്ങിയവ അവിടുത്തെ പ്രസിദ്ധ ഗ്രന്ഥങ്ങളിൽ ചിലതാണ്.",
+            "അവിടുത്തെ മജ്‌ലിസുകളിൽ പതിനായിരക്കണക്കിന് ആളുകൾ പങ്കെടുക്കുകയും വഅളുകൾ കേട്ട് തൗബ ചെയ്തു മടങ്ങുകയും ചെയ്തിരുന്നു.",
+            "ഹിജ്റ 561 റബീഉൽ ആഖിർ 11-ന് ബഗ്ദാദിൽ വെച്ച് വഫാത്തായി. അവിടെ തന്നെയാണ് അവിടുത്തെ മഖാമും സ്ഥിതി ചെയ്യുന്നത്."
+        ];
+
+        let currentFactIndex = 0;
+
+        function initFactSlider() {
+            updateFactDisplay();
+            setInterval(() => {
+                currentFactIndex = (currentFactIndex + 1) % jeelaniFacts.length;
+                updateFactDisplay();
+            }, 5000);
+        }
+
+        function updateFactDisplay() {
+            const factText = document.getElementById('fact-text');
+            if (!factText) return;
+
+            factText.style.opacity = '0';
+            setTimeout(() => {
+                factText.innerText = jeelaniFacts[currentFactIndex];
+                factText.style.opacity = '1';
+            }, 300);
+        }
+
+        window.addEventListener('DOMContentLoaded', initFactSlider);
 
         // Default Comprehensive Database loaded directly from PDF Hall Tickets
         let contestantDatabase = {

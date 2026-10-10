@@ -1,532 +1,378 @@
 <!DOCTYPE html>
 <html lang="ml">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BOOK TEST '26 | SSF PERUMALABAD UNIT</title>
-  
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- HTML5-QRCode Scanner Library -->
-  <script src="https://unpkg.com/html5-qrcode"></script>
-
-  <style>
-    :root {
-      --primary: #025091;
-      --primary-dark: #013866;
-      --accent: #FFC107;
-      --bg-grad: linear-gradient(135deg, #012b52 0%, #025091 60%, #036cc7 100%);
-      --card-bg: #ffffff;
-      --text-dark: #1e293b;
-      --text-muted: #64748b;
-      --radius: 18px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Manrope', 'Noto Sans Malayalam', sans-serif;
-    }
-
-    body {
-      background: var(--bg-grad);
-      min-height: 100vh;
-      color: var(--text-dark);
-      padding: 20px 15px 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 650px;
-    }
-
-    /* Header Styling */
-    .header-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: var(--radius);
-      padding: 25px 20px;
-      text-align: center;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.25);
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .header-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 6px;
-      background: linear-gradient(90deg, #025091, #FFC107);
-    }
-
-    .badge-unit {
-      display: inline-block;
-      background: #e2e8f0;
-      color: var(--primary-dark);
-      font-weight: 800;
-      font-size: 12px;
-      letter-spacing: 1.5px;
-      padding: 6px 14px;
-      border-radius: 50px;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-    }
-
-    .main-title {
-      color: var(--primary);
-      font-size: 28px;
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 6px;
-    }
-
-    .sub-title {
-      color: #d97706;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .author-name {
-      color: var(--text-muted);
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    /* Timer Section */
-    .timer-card {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 22px 15px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
-      margin-bottom: 20px;
-    }
-
-    .timer-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .timer-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .time-box {
-      background: #f8fafc;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 10px 5px;
-    }
-
-    .time-val {
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--primary-dark);
-      line-height: 1;
-    }
-
-    .time-label {
-      font-size: 10px;
-      color: var(--text-muted);
-      font-weight: 700;
-      margin-top: 5px;
-      text-transform: uppercase;
-    }
-
-    /* QR Code Scanner Main Section */
-    .scanner-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 25px 20px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    .scanner-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .scanner-subtitle {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-    }
-
-    #reader {
-      width: 100%;
-      max-width: 380px;
-      margin: 0 auto 15px auto;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 2px dashed var(--primary);
-      background: #f8fafc;
-    }
-
-    #reader video {
-      border-radius: 12px;
-    }
-
-    .scan-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .scan-btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-
-    /* Result Card */
-    .result-card {
-      display: none;
-      background: #f0fdf4;
-      border: 2px solid #22c55e;
-      border-radius: 14px;
-      padding: 20px;
-      margin-top: 15px;
-      text-align: left;
-      animation: fadeIn 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .res-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #dcfce7;
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-    }
-
-    .res-id {
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--primary-dark);
-      background: #dcfce7;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-
-    .res-status {
-      background: #22c55e;
-      color: white;
-      font-size: 11px;
-      font-weight: 800;
-      padding: 4px 8px;
-      border-radius: 50px;
-      text-transform: uppercase;
-    }
-
-    .res-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px 15px;
-      font-size: 13px;
-    }
-
-    .res-item label {
-      display: block;
-      font-size: 10px;
-      color: var(--text-muted);
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .res-item span {
-      font-weight: 700;
-      color: var(--text-dark);
-      font-size: 14px;
-    }
-
-    .error-msg {
-      display: none;
-      background: #fef2f2;
-      border: 1px solid #ef4444;
-      color: #991b1b;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-top: 15px;
-    }
-
-    /* Placeholder Link Card */
-    .portal-link-card {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--radius);
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    .placeholder-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #fef3c7;
-      color: #92400e;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 50px;
-      margin-bottom: 10px;
-    }
-
-    .footer {
-      text-align: center;
-      color: rgba(255,255,255,0.7);
-      font-size: 11px;
-      margin-top: 25px;
-      font-weight: 600;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="container">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOK TEST '26 Portal | SSF Perumalabad Unit</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Manrope & Noto Sans Malayalam -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Noto+Sans+Malayalam:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- QR Code Scanner Library (html5-qrcode) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
     
-    <!-- Header -->
-    <div class="header-card">
-      <span class="badge-unit">SSF PERUMALABAD UNIT</span>
-      <h1 class="main-title">BOOK TEST '26</h1>
-      <div class="sub-title">ശൈഖ് ജീലാനി (റ)</div>
-      <div class="author-name">ഗ്രന്ഥകർത്താവ്: സയ്യിദ് സ്വലാഹുദ്ദീൻ ബുഖാരി</div>
-    </div>
-
-    <!-- Live Timer -->
-    <div class="timer-card">
-      <div class="timer-title">
-        <i class="fa-solid fa-clock"></i> ഓൺലൈൻ ടെസ്റ്റ് ആരംഭിക്കാൻ ഇനി
-      </div>
-      <div class="timer-grid">
-        <div class="time-box">
-          <div class="time-val" id="days">00</div>
-          <div class="time-label">ദിവസം</div>
-        </div>
-        <div class="time-box">
-          <div class="time-val" id="hours">00</div>
-          <div class="time-label">മണിക്കൂർ</div>
-        </div>
-        <div class="time-box">
-          <div class="time-val" id="minutes">00</div>
-          <div class="time-label">മിനിറ്റ്</div>
-        </div>
-        <div class="time-box">
-          <div class="time-val" id="seconds">00</div>
-          <div class="time-label">സെക്കൻഡ്</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- QR Code Scanner Section -->
-    <div class="scanner-card">
-      <div class="scanner-title">
-        <i class="fa-solid fa-qrcode"></i> Hall Ticket QR Code Scan ചെയ്യുക
-      </div>
-      <div class="scanner-subtitle">
-        നിങ്ങളുടെ ഹാൾ ടിക്കറ്റിലെ QR കോഡ് ക്യാമറക്ക് മുന്നിൽ കാണിക്കുക
-      </div>
-
-      <div id="reader"></div>
-
-      <button class="scan-btn" id="start-scan-btn" onclick="startScanner()">
-        <i class="fa-solid fa-camera"></i> Camera ഓൺ ചെയ്യുക
-      </button>
-
-      <!-- Error Box -->
-      <div class="error-msg" id="error-box">
-        <i class="fa-solid fa-circle-exclamation"></i> വിവരങ്ങൾ കണ്ടെത്താനായില്ല. ശരിയായ QR കോഡ് സ്കാൻ ചെയ്യുക!
-      </div>
-
-      <!-- Result Display Card -->
-      <div class="result-card" id="result-box">
-        <div class="res-header">
-          <span class="res-id" id="res-userid">BTG760</span>
-          <span class="res-status" id="res-status">Approved</span>
-        </div>
-        <div class="res-grid">
-          <div class="res-item">
-            <label>പേര് (Name)</label>
-            <span id="res-name">-</span>
-          </div>
-          <div class="res-item">
-            <label>സ്ഥലം (Place)</label>
-            <span id="res-place">-</span>
-          </div>
-          <div class="res-item">
-            <label>കാറ്റഗറി (Category)</label>
-            <span id="res-category">-</span>
-          </div>
-          <div class="res-item">
-            <label>ക്ലാസ് (Class)</label>
-            <span id="res-class">-</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Exam Link Placeholder -->
-    <div class="portal-link-card">
-      <div class="placeholder-badge">
-        <i class="fa-solid fa-lock"></i> ചോദ്യപേപ്പർ ലിങ്ക്
-      </div>
-      <p style="font-size: 13px; color: var(--text-muted); font-weight: 600;">
-        ഒക്ടോബർ 15 വ്യാഴാഴ്ച രാത്രി 8:00 മണിക്ക് ഓൺലൈൻ പരീക്ഷയ്ക്കുള്ള ലിങ്ക് ഇവിടെ സജീവമാകുന്നതാണ്.
-      </p>
-    </div>
-
-    <div class="footer">
-      © 2026 SSF PERUMALABAD UNIT | ALL RIGHTS RESERVED
-    </div>
-
-  </div>
-
-  <script>
-    // Live Spreadsheet Database fetched from user's Google Sheet
-    const sheetData = {
-      "BTG760": { name: "Manha fathima", place: "Perumalabad", gender: "Female", class: "7", category: "Senior", status: "Approved" },
-      "BTG851": { name: "Nusaibathul mazniyya", place: "Perumalabad", gender: "Female", class: "6", category: "Junior", status: "Approved" },
-      "BTB221": { name: "Musthafa b", place: "Habeeb Nagar", gender: "Male", class: "5", category: "Junior", status: "Approved" },
-      "BTG104": { name: "Mubeena b", place: "Habeeb Nagar", gender: "Female", class: "7", category: "Senior", status: "Approved" },
-      "BTG540": { name: "Fathima b", place: "Habeeb Nagar", gender: "Female", class: "9", category: "Senior", status: "Approved" },
-      "BTB129": { name: "Muhammad yaseen.o", place: "Habeeb Nagar", gender: "Male", class: "4", category: "Junior", status: "Approved" },
-      "BTB627": { name: "Muhammed Farhan", place: "Perumalabad", gender: "Male", class: "4", category: "Junior", status: "Approved" },
-      "BTG902": { name: "Hadiya. Pk", place: "Habeeb Nagar", gender: "Female", class: "10", category: "Senior", status: "Approved" },
-      "BTG987": { name: "Hadiya ap", place: "Edakkom", gender: "Female", class: "8", category: "Senior", status: "Approved" },
-      "BTB456": { name: "Hani. Pk", place: "Habeeb Nagar", gender: "Male", class: "5", category: "Junior", status: "Approved" },
-      "BTG351": { name: "Ayisha Razana Ak", place: "Perumalabad", gender: "Female", class: "6", category: "Junior", status: "Approved" }
-    };
-
-    // Countdown Timer logic target: Oct 15, 2026 20:00:00 IST
-    const targetDate = new Date("October 15, 2026 20:00:00").getTime();
-
-    function updateTimer() {
-      const now = new Date().getTime();
-      const diff = targetDate - now;
-
-      if (diff > 0) {
-        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-        document.getElementById('days').innerText = d < 10 ? '0' + d : d;
-        document.getElementById('hours').innerText = h < 10 ? '0' + h : h;
-        document.getElementById('minutes').innerText = m < 10 ? '0' + m : m;
-        document.getElementById('seconds').innerText = s < 10 ? '0' + s : s;
-      } else {
-        document.getElementById('days').innerText = '00';
-        document.getElementById('hours').innerText = '00';
-        document.getElementById('minutes').innerText = '00';
-        document.getElementById('seconds').innerText = '00';
-      }
-    }
-
-    setInterval(updateTimer, 1000);
-    updateTimer();
-
-    // QR Code Scanner Logic
-    let html5QrCode;
-
-    function startScanner() {
-      document.getElementById('start-scan-btn').style.display = 'none';
-      html5QrCode = new Html5Qrcode("reader");
-
-      html5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 220, height: 220 }
-        },
-        (decodedText) => {
-          // Successfully Scanned QR Code
-          handleScannedData(decodedText.trim());
-        },
-        (errorMessage) => {
-          // Scanning...
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            dark: '#0f172a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Manrope', 'Noto Sans Malayalam', 'sans-serif'],
+                    }
+                }
+            }
         }
-      ).catch(err => {
-        alert("ക്യാമറ അനുമതി നൽകിയിട്ടില്ല അല്ലെങ്കിൽ സാങ്കേതിക തകരാർ കാണിക്കുന്നു!");
-        document.getElementById('start-scan-btn').style.display = 'inline-flex';
-      });
-    }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .glow-effect {
+            box-shadow: 0 0 35px -5px rgba(3, 105, 161, 0.3);
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.02); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
 
-    function handleScannedData(scannedText) {
-      const errorBox = document.getElementById('error-box');
-      const resultBox = document.getElementById('result-box');
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-600/30 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 -left-40 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 right-1/3 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl"></div>
+    </div>
 
-      // Extract UserID from QR text if formatted (e.g., BTG760)
-      let matchedKey = Object.keys(sheetData).find(key => scannedText.toUpperCase().includes(key));
+    <header class="w-full border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-blue-500 flex items-center justify-center font-bold text-white shadow-lg">
+                    BT
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg md:text-xl tracking-tight text-white leading-none">BOOK TEST '26</h1>
+                    <p class="text-xs text-brand-400 font-semibold tracking-wide uppercase mt-0.5">SSF PERUMALABAD UNIT</p>
+                </div>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 bg-slate-800/80 border border-slate-700/60 rounded-full px-3 py-1.5 text-xs text-slate-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>Online Portal Active</span>
+            </div>
+        </div>
+    </header>
 
-      if (matchedKey && sheetData[matchedKey]) {
-        const student = sheetData[matchedKey];
-        errorBox.style.display = 'none';
+    <main class="max-w-4xl mx-auto px-4 py-8 md:py-12 w-full flex-grow flex flex-col justify-center items-center">
         
-        document.getElementById('res-userid').innerText = matchedKey;
-        document.getElementById('res-name').innerText = student.name;
-        document.getElementById('res-place').innerText = student.place;
-        document.getElementById('res-category').innerText = student.category;
-        document.getElementById('res-class').innerText = student.class;
-        document.getElementById('res-status').innerText = student.status;
+        <!-- Book Info Badge -->
+        <div class="inline-flex items-center gap-2 bg-brand-500/10 border border-brand-500/30 text-brand-300 rounded-full px-4 py-1.5 text-xs sm:text-sm font-medium mb-6">
+            <i class="fa-solid fa-book-bookmark text-brand-400"></i>
+            <span>ശൈഖ് ജീലാനി (റ) | സയ്യിദ് സ്വലാഹുദ്ദീൻ ബുഖാരി</span>
+        </div>
 
-        resultBox.style.display = 'block';
+        <!-- Main Timer Card -->
+        <div class="w-full bg-slate-800/60 border border-slate-700/80 rounded-3xl p-6 sm:p-10 text-center backdrop-blur-xl shadow-2xl glow-effect relative overflow-hidden mb-8">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-brand-500 to-blue-600"></div>
 
-        // Play success tone
-        try {
-          let audio = new Audio('https://media.geeksforgeeks.org/wp-content/uploads/20190529122812/beep.mp3');
-          audio.play();
-        } catch(e){}
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-100 mb-2">
+                ഓൺലൈൻ പരീക്ഷ ആരംഭിക്കാൻ ഇനി
+            </h2>
+            <p class="text-slate-400 text-xs sm:text-sm mb-8">
+                തീയതി: <span class="text-brand-300 font-semibold">2026 ഒക്ടോബർ 15 വ്യാഴാഴ്ച</span> | സമയം: <span class="text-brand-300 font-semibold">രാത്രി 8:00 PM</span>
+            </p>
 
-      } else {
-        resultBox.style.display = 'none';
-        errorBox.style.display = 'block';
-      }
-    }
-  </script>
+            <div class="grid grid-cols-4 gap-2 sm:gap-4 max-w-xl mx-auto mb-8">
+                <!-- Days -->
+                <div class="bg-slate-900/90 border border-slate-700/60 rounded-2xl p-3 sm:p-5 flex flex-col justify-center items-center">
+                    <span id="days" class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-brand-400 font-mono tracking-tight">00</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider mt-1">ദിവസം</span>
+                </div>
+                <!-- Hours -->
+                <div class="bg-slate-900/90 border border-slate-700/60 rounded-2xl p-3 sm:p-5 flex flex-col justify-center items-center">
+                    <span id="hours" class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-brand-400 font-mono tracking-tight">00</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider mt-1">മണിക്കൂർ</span>
+                </div>
+                <!-- Minutes -->
+                <div class="bg-slate-900/90 border border-slate-700/60 rounded-2xl p-3 sm:p-5 flex flex-col justify-center items-center">
+                    <span id="minutes" class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-brand-400 font-mono tracking-tight">00</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider mt-1">മിനിറ്റ്</span>
+                </div>
+                <!-- Seconds -->
+                <div class="bg-slate-900/90 border border-slate-700/60 rounded-2xl p-3 sm:p-5 flex flex-col justify-center items-center relative overflow-hidden">
+                    <span id="seconds" class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-amber-400 font-mono tracking-tight">00</span>
+                    <span class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider mt-1">സെക്കൻഡ്</span>
+                </div>
+            </div>
+
+            <!-- Action Area / Dynamic Link Container -->
+            <div id="action-area" class="max-w-md mx-auto">
+                <div class="p-4 rounded-2xl bg-slate-900/80 border border-amber-500/30 text-amber-300/90 text-sm flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-clock-rotate-left text-lg animate-spin" style="animation-duration: 10s;"></i>
+                    <span>പരീക്ഷാ സമയം ആകുമ്പോൾ ചോദ്യത്തിനുള്ള ലിങ്ക് ഇവിടെ ലഭ്യമാകുന്നതാണ്.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            <!-- QR Scanner Box -->
+            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl bg-brand-500/10 text-brand-400">
+                            <i class="fa-solid fa-qrcode text-lg"></i>
+                        </div>
+                        <h3 class="font-bold text-slate-200">ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാനർ</h3>
+                    </div>
+                    <button onclick="toggleScanner()" id="scanner-toggle-btn" class="text-xs bg-brand-600 hover:bg-brand-500 text-white px-3.5 py-2 rounded-xl transition-all font-semibold shadow-md">
+                        <i class="fa-solid fa-camera mr-1.5"></i> Scan QR Ticket
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                    ഹാൾ ടിക്കറ്റിലെ ക്യു.ആർ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ട് വിദ്യാർത്ഥിയുടെ രജിസ്ട്രേഷൻ വിവരങ്ങൾ തത്സമയം പരിശോധിക്കുക.
+                </p>
+
+                <!-- Camera Scanner Container (Hidden by default) -->
+                <div id="qr-reader-container" class="hidden mb-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-900 p-2">
+                    <div id="reader" style="width: 100%;"></div>
+                    <button onclick="stopScanner()" class="mt-2 w-full bg-rose-600/80 hover:bg-rose-600 text-white text-xs py-2 rounded-lg font-semibold transition-all">
+                        Close Camera
+                    </button>
+                </div>
+                
+                <!-- Verification Result Card -->
+                <div id="user-id-msg" class="text-xs">
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-700/60 text-slate-400 text-center italic">
+                        ക്യു.ആർ സ്കാൻ ചെയ്യുമ്പോൾ വിദ്യാർത്ഥിയുടെ വിവരങ്ങൾ ഇവിടെ തെളിയും.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Notes -->
+            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 backdrop-blur-sm">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+                        <i class="fa-solid fa-circle-info text-lg"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-200">പ്രധാന നിർദ്ദേശങ്ങൾ</h3>
+                </div>
+                <ul class="text-xs text-slate-300 space-y-2 list-disc list-inside leading-relaxed">
+                    <li>ഓൺലൈൻ ഘട്ടം ഒക്ടോബർ 15 വ്യാഴാഴ്ച രാത്രി 8:00 PM നാണ് ആരംഭിക്കുന്നത്.</li>
+                    <li>പരീക്ഷ തന്നിരിക്കുന്ന നിശ്ചിത സമയത്തിനുള്ളിൽ പൂർത്തിയാക്കേണ്ടതാണ്.</li>
+                    <li>ഓഫ്‌ലൈൻ ഘട്ടം ഒക്ടോബർ 17 ശനിയാഴ്ച ഉച്ചക്ക് 3:00 PM ന് <b>മദ്റസത്തുൽ ഈമാൻ, ഇടക്കോം</b> വേദിയിൽ നടക്കും.</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full border-t border-slate-800/80 bg-slate-900/90 py-6 text-center text-xs text-slate-500 mt-8">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© 2026 SSF PERUMALABAD UNIT. All Rights Reserved.</p>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-phone text-brand-400"></i> Help Desk: 7560949421</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Google Sheet CSV Feed URL
+        const sheetId = "1OdJB9UhFBaKwl_QTBEr8jn5wqAyuNCxlNsrARjemGBk";
+        const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+
+        let contestantDatabase = {};
+
+        // Parse CSV string safely
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = [];
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                // Basic CSV splitter considering commas inside quotes
+                const row = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || line.split(',');
+                result.push(row.map(cell => cell.replace(/^"|"$/g, '').trim()));
+            }
+            return result;
+        }
+
+        // Fetch Live Data from Google Sheet
+        async function fetchSheetData() {
+            try {
+                const response = await fetch(sheetCsvUrl);
+                if (!response.ok) throw new Error("Sheet Network Response Failed");
+                const csvData = await response.text();
+                const rows = parseCSV(csvData);
+
+                if (rows.length > 1) {
+                    const db = {};
+                    // Assuming headers exist; iterate through data rows
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (!row || row.length < 2) continue;
+                        
+                        // Extract fields with fallback column positions
+                        const userId = (row[0] || '').toUpperCase();
+                        const name = row[1] || 'N/A';
+                        const place = row[2] || 'PERUMALABAD';
+                        const gender = row[3] || '';
+                        const category = row[4] || '';
+                        const venue = row[5] || 'MADRASATHUL IMAN, EDAKKOM';
+
+                        if (userId) {
+                            db[userId] = { name, place, gender, category, venue };
+                        }
+                    }
+                    contestantDatabase = db;
+                }
+            } catch (error) {
+                console.warn("Could not fetch Google Sheet CSV, using fallback data if needed.", error);
+            }
+        }
+
+        // Initial Load of Sheet Data
+        fetchSheetData();
+
+        // Target Date: October 15, 2026 at 20:00:00 (8:00 PM)
+        const targetDate = new Date("October 15, 2026 20:00:00").getTime();
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = String(days).padStart(2, '0');
+                document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+            } else {
+                document.getElementById('days').innerText = "00";
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+
+                const actionArea = document.getElementById('action-area');
+                actionArea.innerHTML = `
+                    <div class="animate-bounce">
+                        <a href="#" onclick="alert('ഒക്ടോബർ 15 ന് പരീക്ഷാ ലിങ്ക് ഇവിടെ ആക്റ്റീവാകുന്നതാണ്!'); return false;" class="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-base py-4 px-8 rounded-2xl shadow-xl transition-all">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                            <span>പരീക്ഷ ആരംഭിക്കുക (START EXAM)</span>
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // QR Scanner Management
+        let html5QrCode = null;
+        let isScannerOpen = false;
+
+        function toggleScanner() {
+            const container = document.getElementById('qr-reader-container');
+            const toggleBtn = document.getElementById('scanner-toggle-btn');
+
+            if (!isScannerOpen) {
+                container.classList.remove('hidden');
+                toggleBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Starting...';
+                
+                // Fetch fresh data from sheet before scanning
+                fetchSheetData();
+
+                html5QrCode = new Html5Qrcode("reader");
+                html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 200, height: 200 } },
+                    async (decodedText) => {
+                        // Successfully scanned QR code content
+                        const scannedCode = decodedText.trim().toUpperCase();
+                        await verifyScannedData(scannedCode);
+                        stopScanner();
+                    },
+                    (errorMessage) => {
+                        // Scanning in progress...
+                    }
+                ).then(() => {
+                    isScannerOpen = true;
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-camera-rotate mr-1"></i> Scanning...';
+                }).catch(err => {
+                    alert("കാമറ ആക്സസ് ചെയ്യാൻ കഴിഞ്ഞില്ല. ദയവായി അനുമതി നൽകുക.");
+                    container.classList.add('hidden');
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-camera mr-1"></i> Scan QR Ticket';
+                });
+            } else {
+                stopScanner();
+            }
+        }
+
+        function stopScanner() {
+            if (html5QrCode && isScannerOpen) {
+                html5QrCode.stop().then(() => {
+                    isScannerOpen = false;
+                    document.getElementById('qr-reader-container').classList.add('hidden');
+                    document.getElementById('scanner-toggle-btn').innerHTML = '<i class="fa-solid fa-camera mr-1"></i> Scan QR Ticket';
+                }).catch(err => {
+                    console.error("Failed to stop scanner", err);
+                });
+            } else {
+                isScannerOpen = false;
+                document.getElementById('qr-reader-container').classList.add('hidden');
+                document.getElementById('scanner-toggle-btn').innerHTML = '<i class="fa-solid fa-camera mr-1"></i> Scan QR Ticket';
+            }
+        }
+
+        // Contestant Data Verification via QR
+        async function verifyScannedData(code) {
+            const msg = document.getElementById('user-id-msg');
+            
+            // Re-fetch data to guarantee new/updated Sheet rows are immediately available
+            await fetchSheetData();
+
+            const student = contestantDatabase[code];
+
+            if (student) {
+                msg.innerHTML = `
+                    <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200">
+                        <div class="flex items-center justify-between font-bold text-emerald-400 mb-1">
+                            <span>✓ Verified: ${student.name}</span>
+                            <span class="text-xs bg-emerald-500/20 px-2 py-0.5 rounded">${code}</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300">കാറ്റഗറി: ${student.category || 'Junior/Senior'} | സ്ഥലം: ${student.place || 'PERUMALABAD'}</p>
+                        <p class="text-[11px] text-brand-300 mt-0.5">വേദി: ${student.venue || 'MADRASATHUL IMAN, EDAKKOM'}</p>
+                    </div>
+                `;
+            } else {
+                msg.innerHTML = `
+                    <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                        <span class="font-bold">⚠️ ${code}:</span> കൃത്യമായ യൂസർ ഐ.ഡി ലഭ്യമല്ല. ദയവായി ശരിയായ ഹോൾ ടിക്കറ്റ് സ്കാൻ ചെയ്യുക.
+                    </div>
+                `;
+            }
+        }
+    </script>
 </body>
 </html>

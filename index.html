@@ -309,9 +309,86 @@
             </div>
         </div>
 
+        <!-- ADMIN DASHBOARD VIEW -->
+        <div id="admin-view" class="hidden space-y-6">
+            <!-- Admin Header -->
+            <div class="flex items-center justify-between bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl backdrop-blur-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black text-lg shadow-lg shadow-amber-500/20">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">ADMIN CONTROL PANEL</span>
+                        <h3 class="font-black text-white text-sm sm:text-base">മുഴുവൻ വിദ്യാർത്ഥികളുടെ വിവരങ്ങൾ</h3>
+                    </div>
+                </div>
+                <button onclick="handleLogout()" class="bg-rose-600/80 hover:bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-md">
+                    <i class="fa-solid fa-right-from-bracket"></i> Exit Admin
+                </button>
+            </div>
+
+            <!-- Admin Data Stats & Search -->
+            <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-4 sm:p-6 backdrop-blur-sm space-y-4">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="relative w-full sm:w-72">
+                        <input type="text" id="admin-search-input" onkeyup="renderAdminTable()" placeholder="പേര്, User ID, സ്ഥലം തിരയുക..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 pl-9 text-xs text-white focus:outline-none focus:border-amber-500">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                    </div>
+                    <div class="text-xs text-slate-400">
+                        ആകെ രജിസ്ട്രേഷനുകൾ: <span id="admin-total-count" class="font-bold text-amber-400 text-sm">0</span>
+                    </div>
+                </div>
+
+                <!-- Admin Table -->
+                <div class="overflow-x-auto rounded-xl border border-slate-700/60 bg-slate-900/60">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-800 text-slate-400 font-bold uppercase text-[10px]">
+                            <tr>
+                                <th class="p-3">User ID</th>
+                                <th class="p-3">പേര്</th>
+                                <th class="p-3">സ്ഥലം</th>
+                                <th class="p-3">ലിംഗഭേദം</th>
+                                <th class="p-3">ക്ലാസ് / കാറ്റഗറി</th>
+                                <th class="p-3">പാസ്‌വേഡ്</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-800">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <footer class="border-t border-slate-800 bg-slate-900/80 py-4 mt-8">
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="admin-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-6 border border-amber-500/30 shadow-2xl relative animate-fade-in">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-2 text-xl border border-amber-500/30">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-base font-extrabold text-white">Admin Login</h3>
+                <p class="text-xs text-slate-400">അഡ്മിൻ പാനലിലേക്ക് പ്രവേശിക്കാൻ പാസ്‌വേഡ് നൽകുക</p>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Admin Password</label>
+                    <input type="password" id="admin-modal-pass" placeholder="Enter Admin Password" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                </div>
+                <div id="admin-error-msg" class="text-xs text-rose-400 font-semibold text-center"></div>
+                <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-2.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> Login as Admin
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer id="portal-footer" onclick="handleFooterClick()" class="border-t border-slate-800 bg-slate-900/80 py-4 mt-8 cursor-pointer select-none">
         <div class="max-w-4xl mx-auto px-4 text-center text-xs text-slate-500">
             <p>© 2026 SSF PERUMALABAD UNIT. All Rights Reserved.</p>
         </div>
@@ -321,7 +398,9 @@
         // Data Feed Endpoint (Published Google Sheet CSV Exporter)
         const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc0uKR34rIFoSlyG-3uMSLr-53gIbXI6oB2raiWPvzlVblXHNmRZBsolOpnRNkpt0-4lgFs6rc1rkF/pub?output=csv";
 
-        // 10 Key Facts about Shaikh Abdul Qadir Jeelani (r) (Unnumbered & No Counters)
+        let adminPassword = "123"; // Default Admin Password from sheet settings
+
+        // 10 Key Facts about Shaikh Abdul Qadir Jeelani (r)
         const jeelaniFacts = [
             "ശൈഖ് അബ്ദുൽ ഖാദിർ ജീലാനി (റ) ഹിജ്റ 470-ൽ പേർഷ്യയിലെ 'ജീലാൻ' എന്ന സ്ഥലത്താണ് ജനിച്ചത്.",
             "അവിടുന്ന് തിരുനബി (സ) തങ്ങളുടെ പേരക്കുട്ടിയായ ഹസൻ (റ), ഹുസൈൻ (റ) വഴി കുടുംബപരമ്പര എത്തുന്ന സയ്യിദാണ്.",
@@ -361,7 +440,7 @@
             checkExistingSession();
         });
 
-        // Default Comprehensive Database loaded directly from PDF Hall Tickets
+        // Default Database
         let contestantDatabase = {
             "BTG760": { name: "Manha Fathima", place: "Perumalabad", gender: "Female", class: "", category: "7 Senior", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "786313" },
             "BTG851": { name: "Nusaibathul Mazniyya", place: "Perumalabad", gender: "Female", class: "", category: "6 Junior", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "sajida" },
@@ -376,7 +455,7 @@
             "BTG351": { name: "Ayisha Razana Ak", place: "Perumalabad", gender: "Female", class: "", category: "6 Junior", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "123456" }
         };
 
-        // Parse CSV string safely matching Col B(UserID), Col C(Name), Col D(Place), Col E(Gender), Col F(Class), Col G(Category), Col I(Password)
+        // Parse CSV string safely
         function parseCSV(text) {
             const lines = text.split(/\r\n|\n/);
             const result = [];
@@ -405,7 +484,7 @@
             return result;
         }
 
-        // Fetch Live Data silently from Google Sheet
+        // Fetch Live Data from Google Sheet
         async function fetchSheetData() {
             try {
                 const response = await fetch(`${sheetCsvUrl}&t=${new Date().getTime()}`);
@@ -415,8 +494,18 @@
 
                 if (rows.length > 0) {
                     let startIndex = 0;
-                    if (rows[0] && (rows[0][0].toLowerCase().includes("timestamp") || (rows[0][1] && rows[0][1].toLowerCase().includes("user")))) {
+                    if (rows[0] && (rows[0][0].toLowerCase().includes("timestamp") || (rows[0][1] && rows[0][1].toLowerCase().includes("user")) || rows[0][0].toLowerCase().includes("questions"))) {
                         startIndex = 1;
+                    }
+
+                    // Check for Admin Password in Column D/E row 2
+                    for (let i = 0; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (row && row[3] && row[3].toLowerCase().includes("admin password") && row[4]) {
+                            adminPassword = row[4].trim();
+                        } else if (row && row[3] === "123") {
+                            adminPassword = "123";
+                        }
                     }
 
                     for (let i = startIndex; i < rows.length; i++) {
@@ -439,7 +528,7 @@
                         const examDate = 'ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)';
                         const venue = 'MADRASATHUL IMAN, EDAKKOM';
 
-                        if (userId) {
+                        if (userId && userId.startsWith("BT")) {
                             contestantDatabase[userId] = { 
                                 name, 
                                 place, 
@@ -459,6 +548,96 @@
         }
 
         fetchSheetData();
+
+        // Footer Triple Click Handler
+        let footerClickCount = 0;
+        let footerClickTimer = null;
+
+        function handleFooterClick() {
+            footerClickCount++;
+            if (footerClickTimer) clearTimeout(footerClickTimer);
+
+            if (footerClickCount >= 3) {
+                footerClickCount = 0;
+                openAdminModal();
+            } else {
+                footerClickTimer = setTimeout(() => {
+                    footerClickCount = 0;
+                }, 1000);
+            }
+        }
+
+        function openAdminModal() {
+            document.getElementById('admin-modal-pass').value = '';
+            document.getElementById('admin-error-msg').innerText = '';
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-modal').classList.add('flex');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+            document.getElementById('admin-modal').classList.remove('flex');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const inputPass = document.getElementById('admin-modal-pass').value.trim();
+
+            fetchSheetData().then(() => {
+                if (inputPass === adminPassword) {
+                    closeAdminModal();
+                    activeUser = { id: 'ADMIN', name: 'Admin Portal' };
+                    localStorage.setItem('ssf_active_user', 'ADMIN');
+                    
+                    document.getElementById('public-view').classList.add('hidden');
+                    document.getElementById('candidate-view').classList.add('hidden');
+                    document.getElementById('admin-view').classList.remove('hidden');
+
+                    document.getElementById('nav-auth-status').innerHTML = `
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
+                            <i class="fa-solid fa-user-shield"></i> ADMIN
+                        </span>
+                    `;
+
+                    renderAdminTable();
+                } else {
+                    document.getElementById('admin-error-msg').innerText = "തെറ്റായ അഡ്മിൻ പാസ്‌വേഡ്!";
+                }
+            });
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            const searchVal = (document.getElementById('admin-search-input').value || '').toLowerCase();
+            tbody.innerHTML = '';
+
+            const keys = Object.keys(contestantDatabase);
+            let count = 0;
+
+            keys.forEach(id => {
+                const user = contestantDatabase[id];
+                if (
+                    id.toLowerCase().includes(searchVal) ||
+                    user.name.toLowerCase().includes(searchVal) ||
+                    user.place.toLowerCase().includes(searchVal)
+                ) {
+                    count++;
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/40 transition-all';
+                    tr.innerHTML = `
+                        <td class="p-3 font-mono font-bold text-amber-400">${id}</td>
+                        <td class="p-3 font-semibold text-white">${user.name}</td>
+                        <td class="p-3">${user.place}</td>
+                        <td class="p-3">${user.gender}</td>
+                        <td class="p-3">${user.category}</td>
+                        <td class="p-3 font-mono text-emerald-400 font-semibold">${user.pass || '123456'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+
+            document.getElementById('admin-total-count').innerText = count;
+        }
 
         // Target Date: October 15, 2026 at 20:00:00 (8:00 PM)
         const targetDate = new Date("October 15, 2026 20:00:00").getTime();
@@ -510,6 +689,21 @@
         let activeUser = null;
 
         function loginUser(userId) {
+            if (userId === 'ADMIN') {
+                activeUser = { id: 'ADMIN', name: 'Admin Portal' };
+                document.getElementById('public-view').classList.add('hidden');
+                document.getElementById('candidate-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+
+                document.getElementById('nav-auth-status').innerHTML = `
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
+                        <i class="fa-solid fa-user-shield"></i> ADMIN
+                    </span>
+                `;
+                renderAdminTable();
+                return;
+            }
+
             const cleanId = userId.trim().toUpperCase();
             const student = contestantDatabase[cleanId];
 
@@ -519,6 +713,7 @@
                 
                 // Switch Views
                 document.getElementById('public-view').classList.add('hidden');
+                document.getElementById('admin-view').classList.add('hidden');
                 document.getElementById('candidate-view').classList.remove('hidden');
 
                 // Populate Candidate Profile Details
@@ -549,11 +744,13 @@
                 `;
             } else {
                 const errBox = document.getElementById('login-error-msg');
-                errBox.innerHTML = `
-                    <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-center font-semibold">
-                        യൂസർ ഐഡി "${cleanId}" സെർവറിൽ കണ്ടെത്താനായില്ല. ദയവായി ശരിയായ ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാൻ ചെയ്യുക.
-                    </div>
-                `;
+                if (errBox) {
+                    errBox.innerHTML = `
+                        <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-center font-semibold">
+                            യൂസർ ഐഡി "${cleanId}" സെർവറിൽ കണ്ടെത്താനായില്ല. ദയവായി ശരിയായ ഹാൾ ടിക്കറ്റ് ക്യു.ആർ സ്കാൻ ചെയ്യുക.
+                        </div>
+                    `;
+                }
             }
         }
 
@@ -576,7 +773,6 @@
                 const student = contestantDatabase[cleanId];
 
                 if (student) {
-                    // Password verification against sheet password
                     if (student.pass && student.pass.toString().trim() === pass) {
                         loginUser(cleanId);
                     } else {
@@ -600,6 +796,7 @@
             localStorage.removeItem('ssf_active_user');
             activeUser = null;
             document.getElementById('candidate-view').classList.add('hidden');
+            document.getElementById('admin-view').classList.add('hidden');
             document.getElementById('public-view').classList.remove('hidden');
             document.getElementById('nav-auth-status').innerHTML = `
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -614,12 +811,16 @@
 
         function checkExistingSession() {
             const savedUser = localStorage.getItem('ssf_active_user');
-            if (savedUser && contestantDatabase[savedUser]) {
-                loginUser(savedUser);
+            if (savedUser) {
+                if (savedUser === 'ADMIN') {
+                    loginUser('ADMIN');
+                } else if (contestantDatabase[savedUser]) {
+                    loginUser(savedUser);
+                }
             }
         }
 
-        // Profile Photo Management with FileReader
+        // Profile Photo Management
         function handlePhotoUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -632,7 +833,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64Image = e.target.result;
-                if (activeUser) {
+                if (activeUser && activeUser.id !== 'ADMIN') {
                     localStorage.setItem(`ssf_photo_${activeUser.id}`, base64Image);
                     applyProfilePhoto(base64Image);
                 }
@@ -659,12 +860,12 @@
 
             displayImg.classList.add('hidden');
             placeholder.classList.remove('hidden');
-            if (activeUser) {
+            if (activeUser && activeUser.name) {
                 avatarContainer.innerHTML = `<span id="avatar-initials">${activeUser.name.substring(0, 2)}</span>`;
             }
         }
 
-        // QR Code Scanner Control (Auto-populates User ID field)
+        // QR Code Scanner Control
         let html5QrcodeScanner = null;
 
         function toggleScanner() {
@@ -690,7 +891,6 @@
                 (decodedText) => {
                     stopScanner();
                     let cleanCode = decodedText.trim().toUpperCase();
-                    // Extract ID if full URL or string contains ID pattern (e.g. BTG760)
                     const match = cleanCode.match(/BT[A-Z0-9]+/);
                     if (match) {
                         cleanCode = match[0];
@@ -713,9 +913,7 @@
                         }
                     });
                 },
-                (errorMessage) => {
-                    // Scanning active...
-                }
+                (errorMessage) => {}
             ).catch(err => {
                 console.error("Camera access failed", err);
             });

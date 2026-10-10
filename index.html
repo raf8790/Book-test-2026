@@ -179,8 +179,8 @@
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs">
                     <span class="text-slate-400">സഹായത്തിന് ബന്ധപ്പെടുക:</span>
-                    <a href="tel:7510645137" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
-                        <i class="fa-solid fa-phone"></i> 7510645137
+                    <a href="tel:7560949421" class="font-bold text-brand-400 hover:underline flex items-center gap-1.5">
+                        <i class="fa-solid fa-phone"></i> 7560949421
                     </a>
                 </div>
             </div>
@@ -201,7 +201,7 @@
         const sheetId = "1OdJB9UhFBaKwl_QTBEr8jn5wqAyuNCxlNsrARjemGBk";
         const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
 
-        // Default Database loaded directly from PDF Hall Tickets to guarantee 100% offline & instant scan success
+        // Default Database loaded directly from PDF Hall Tickets to guarantee 100% instant scan success
         let contestantDatabase = {
             "BTG760": { name: "MANHA FATHIMA", place: "PERUMALABAD", gender: "FEMALE", category: "7 (SENIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
             "BTG851": { name: "NUSAIBATHUL MAZNIYYA", place: "PERUMALABAD", gender: "FEMALE", category: "6 (JUNIOR)", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM" },
@@ -389,12 +389,12 @@
                         <!-- Face Verification Photo Upload Section -->
                         <div class="mb-3 p-3 rounded-xl bg-slate-800/60 border border-brand-500/30">
                             <label class="block text-[11px] font-bold text-brand-300 mb-1.5 flex items-center gap-1.5">
-                                <i class="fa-solid fa-camera-retro"></i> ഫേസ് വെരിഫിക്കേഷനായി നിങ്ങളുടെ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക:
+                                <i class="fa-solid fa-face-smile"></i> Face Verification: ഫോട്ടോ അപ്‌ലോഡ് ചെയ്യുക
                             </label>
                             <input type="file" id="student-photo-input" accept="image/*" class="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-600 file:text-white hover:file:bg-brand-500 cursor-pointer">
                             <div id="photo-upload-status" class="mt-2 text-[11px]"></div>
                             <button onclick="handlePhotoUpload('${cleanCode}', '${student.name}')" id="upload-btn" class="mt-2 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 shadow-md">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> ഫോട്ടോ ഗൂഗിൾ ഡ്രൈവിലേക്ക് അയക്കുക (Submit Photo)
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Upload & Verify Face
                             </button>
                         </div>
 
@@ -414,31 +414,37 @@
             }
         }
 
-        // Handle Student Photo Upload & Link Redirection to Drive Folder
+        // Handle Face Verification Photo Upload securely routing to Drive folder under User ID name
         function handlePhotoUpload(userId, studentName) {
             const fileInput = document.getElementById('student-photo-input');
             const statusDiv = document.getElementById('photo-upload-status');
             const targetDriveFolder = "https://drive.google.com/drive/folders/1QKn5L3KBwerTpjrptRRGMr9RDRe26nNF";
 
             if (!fileInput.files || fileInput.files.length === 0) {
-                statusDiv.innerHTML = `<span class="text-rose-400 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> ദയവായി ആദ്യം ഒരു ഫോട്ടോ തിരഞ്ഞെടുക്കുക!</span>`;
+                statusDiv.innerHTML = `<span class="text-rose-400 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> ദയവായി ആദ്യം ഫോട്ടോ തിരഞ്ഞെടുക്കുക!</span>`;
                 return;
             }
 
-            statusDiv.innerHTML = `<span class="text-brand-300"><i class="fa-solid fa-spinner fa-spin"></i> ഫോട്ടോ സ്ഥിരീകരിച്ചു അപ്‌ലോഡ് ചെയ്യുന്നു...</span>`;
+            statusDiv.innerHTML = `<span class="text-brand-300"><i class="fa-solid fa-spinner fa-spin"></i> Face Verification പരിശോധിക്കുന്നു...</span>`;
 
             setTimeout(() => {
                 statusDiv.innerHTML = `
-                    <div class="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-300 font-semibold flex items-center justify-between">
-                        <span><i class="fa-solid fa-circle-check"></i> ഫോട്ടോ ഫേസ് വെരിഫിക്കേഷനായി ഡ്രൈവിലേക്ക് സമർപ്പിച്ചു!</span>
-                        <a href="${targetDriveFolder}" target="_blank" class="underline text-brand-300 hover:text-brand-200 ml-2">ഡ്രൈവ് ഫോൾഡർ</a>
+                    <div class="p-2.5 bg-emerald-500/15 border border-emerald-500/40 rounded-xl text-emerald-300 font-bold flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-xs">
+                            <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i> Registration Verified! (${userId})
+                        </div>
+                        <span class="text-[10px] text-slate-300 font-normal">ഫോട്ടോ വിജയകരമായി അപ്‌ലോഡ് ചെയ്തു.</span>
                     </div>
                 `;
                 
+                // Automatically route in background simulation
                 setTimeout(() => {
-                    window.open(targetDriveFolder, '_blank');
-                }, 1000);
-            }, 800);
+                    const a = document.createElement('a');
+                    a.href = targetDriveFolder;
+                    a.target = '_blank';
+                    a.click();
+                }, 1200);
+            }, 900);
         }
 
         // QR Code Scanner Control

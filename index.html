@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ml">
 <head>
@@ -405,6 +404,21 @@
                         </div>
 
                         <div class="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-800">
+                            <span>REG: 2026 EDITION</span>
+                            <span class="text-emerald-400 font-bold">AUTHORIZED PORTAL</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                msg.innerHTML = `
+                    <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs text-center font-semibold">
+                        <i class="fa-solid fa-circle-xmark text-lg text-rose-400 mb-1 block"></i>
+                        ഹാൾ ടിക്കറ്റ് കോഡ് "${cleanCode}" കണ്ടെത്താനായില്ല. ദയവായി ശരിയായ ക്യു.ആർ കോഡ് സ്കാൻ ചെയ്യുക.
+                    </div>
+                `;
+            }
+        }
+
         // Face Detection and Background Upload with Privacy & Strict Validation
         function processSilentFaceUpload(userId, studentName) {
             const fileInput = document.getElementById('student-photo-input');
@@ -535,4 +549,3 @@
     </script>
 </body>
 </html>
-```

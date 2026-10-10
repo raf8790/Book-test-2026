@@ -212,9 +212,8 @@
     </footer>
 
     <script>
-        // Data Feed Endpoint (Google Sheet CSV Exporter)
-        const sheetId = "1OdJB9UhFBaKwl_QTBEr8jn5wqAyuNCxlNsrARjemGBk";
-        const sheetCsvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+        // Data Feed Endpoint (Published Google Sheet CSV Exporter)
+        const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc0uKR34rIFoSlyG-3uMSLr-53gIbXI6oB2raiWPvzlVblXHNmRZBsolOpnRNkpt0-4lgFs6rc1rkF/pub?output=csv";
 
         // 10 Key Facts about Shaikh Abdul Qadir Jeelani (r) without numbering
         const jeelaniFacts = [
@@ -226,7 +225,7 @@
             "'മുഹ്‌യിദ്ദീൻ' (ദീനിനെ പുനരുജ്ജീവിപ്പിച്ചയാൾ), 'സുൽത്താനുൽ ഔലിയാ' (ഔലിയാക്കളുടെ സുൽത്താൻ) എന്നീ പേരുകളിൽ അവിടുന്ന് അറിയപ്പെടുന്നു.",
             "ഖാദിരിയ്യ ത്വരീഖത്തിന്റെ സ്ഥാപകനായ മഹാനവർകൾ ലക്ഷക്കണക്കിന് ആളുകളെ സന്മാർഗ്ഗത്തിലേക്ക് നയിച്ചു.",
             "'അൽ ഫുതൂഹുൽ ഗൈബ്', 'ഗുൻയതുത്ത്വാലിബീൻ' തുടങ്ങിയവ അവിടുത്തെ പ്രസിദ്ധ ഗ്രന്ഥങ്ങളിൽ ചിലതാണ്.",
-            "അവിടുത്തെ മജ്‌ലിസുകളിൽ പതിനായിരക്കണക്കിന് ആളുകൾ പങ്കെടുക്കുകയും വഅളുകൾ കേട്ട് തൗബ ചെയ്തു മടങ്ങുകയും ചെയ്തിരുന്നു.",
+            "അവിടുത്തെ മജ്‌ലിസുകളിൽ പതിനായിരക്കണക്കിന് ആളുകൾ പങ്കെടുക്കുകയും വ وعളുകൾ കേട്ട് തൗബ ചെയ്തു മടങ്ങുകയും ചെയ്തിരുന്നു.",
             "ഹിജ്റ 561 റബീഉൽ ആഖിർ 11-ന് ബഗ്ദാദിൽ വെച്ച് വഫാത്തായി. അവിടെ തന്നെയാണ് അവിടുത്തെ മഖാമും സ്ഥിതി ചെയ്യുന്നത്."
         ];
 
@@ -307,21 +306,35 @@
 
                 if (rows.length > 0) {
                     let startIndex = 0;
-                    if (rows[0] && (rows[0][0].toLowerCase().includes("id") || rows[0][0].toLowerCase().includes("user"))) {
+                    // Check if first row is header
+                    if (rows[0] && (rows[0][0].toLowerCase().includes("timestamp") || (rows[0][1] && rows[0][1].toLowerCase().includes("user")))) {
                         startIndex = 1;
                     }
 
                     for (let i = startIndex; i < rows.length; i++) {
                         const row = rows[i];
-                        if (!row || row.length < 2) continue;
+                        if (!row || row.length < 3) continue;
                         
-                        const userId = (row[0] || '').replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase();
-                        const name = row[1] || 'N/A';
-                        const place = row[2] || 'PERUMALABAD';
-                        const gender = row[3] || 'N/A';
-                        const category = row[4] || 'N/A';
-                        const examDate = row[5] || 'ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)';
-                        const venue = row[6] || 'MADRASATHUL IMAN, EDAKKOM';
+                        // Based on Google Sheet: Col B (index 1) = UserID, Col C (index 2) = Name, Col D (index 3) = Place, Col E (index 4) = Gender, Col F (index 5) = Class, Col G (index 6) = Category
+                        const userId = (row[1] || '').replace(/[^a-zA-Z0-9]/g, '').trim().toUpperCase();
+                        const name = (row[2] || 'N/A').toUpperCase();
+                        const place = (row[3] || 'PERUMALABAD').toUpperCase();
+                        const gender = (row[4] || 'N/A').toUpperCase();
+                        
+                        // Combine Class and Category if Class exists (e.g., "7 (SENIOR)")
+                        const classNum = (row[5] || '').trim();
+                        const categoryName = (row[6] || '').trim();
+                        let category = 'N/A';
+                        if (classNum && categoryName) {
+                            category = `${classNum} (${categoryName.toUpperCase()})`;
+                        } else if (categoryName) {
+                            category = categoryName.toUpperCase();
+                        } else if (classNum) {
+                            category = classNum;
+                        }
+
+                        const examDate = 'ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)';
+                        const venue = 'MADRASATHUL IMAN, EDAKKOM';
 
                         if (userId) {
                             contestantDatabase[userId] = { name, place, gender, category, examDate, venue };

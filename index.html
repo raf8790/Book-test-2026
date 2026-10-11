@@ -451,7 +451,7 @@
                 </div>
                 <div>
                     <h3 class="font-black text-white text-sm sm:text-base">ADMIN CONTROL DASHBOARD</h3>
-                    <p class="text-[10px] text-slate-400">SSF Perumalabad Unit • Live Database & Filters</p>
+                    <p class="text-[10px] text-slate-400">SSF Perumalabad Unit • Live Cloud Database & Filters</p>
                 </div>
             </div>
             <button onclick="closeAdminDashboard()" class="text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-bold">
@@ -478,7 +478,7 @@
                 </div>
                 <div class="bg-slate-900 border border-slate-800 p-3 sm:p-4 rounded-xl">
                     <span class="text-[10px] font-bold text-slate-400 uppercase">System Status</span>
-                    <span class="block text-xs font-bold text-brand-400 mt-2"><i class="fa-solid fa-circle text-[8px] animate-pulse mr-1"></i> Connected</span>
+                    <span class="block text-xs font-bold text-brand-400 mt-2"><i class="fa-solid fa-circle text-[8px] animate-pulse mr-1"></i> Live Cloud Sync</span>
                 </div>
             </div>
 
@@ -620,16 +620,111 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT CORE LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Configuration setup
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDummyKeyForFallbackOnly12345",
+            authDomain: "ssf-booktest.firebaseapp.com",
+            projectId: "ssf-booktest",
+            storageBucket: "ssf-booktest.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ssf-book-test-2026';
+
+        // Authenticate anonymously or with token
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                listenToCloudUpdates();
+            } catch (err) {
+                console.warn("Firebase Auth Error: Fallback to local storage mode", err);
+            }
+        }
+
+        // Realtime Firestore Listener to sync all changes dynamically
+        function listenToCloudUpdates() {
+            try {
+                const publicCol = collection(db, 'artifacts', appId, 'public', 'data', 'students');
+                onSnapshot(publicCol, (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        const data = change.doc.data();
+                        const id = change.doc.id;
+                        if (data && window.contestantDatabase[id]) {
+                            if (data.pass) {
+                                window.contestantDatabase[id].pass = data.pass;
+                                localStorage.setItem(`ssf_pass_${id}`, data.pass);
+                            }
+                            if (data.profilePhoto !== undefined) {
+                                window.contestantDatabase[id].profilePhoto = data.profilePhoto;
+                                if (data.profilePhoto) {
+                                    localStorage.setItem(`ssf_photo_${id}`, data.profilePhoto);
+                                } else {
+                                    localStorage.removeItem(`ssf_photo_${id}`);
+                                }
+                            }
+                            if (data.sessionActive !== undefined) {
+                                window.contestantDatabase[id].sessionActive = data.sessionActive;
+                            }
+                            if (data.logs) {
+                                localStorage.setItem(`ssf_logs_${id}`, JSON.stringify(data.logs));
+                            }
+                        }
+                    });
+                    if (window.isAdminOpen) {
+                        window.renderAdminTable();
+                    }
+                    if (window.activeUser && window.contestantDatabase[window.activeUser.id]) {
+                        if (window.activeUser.pass !== window.contestantDatabase[window.activeUser.id].pass) {
+                            window.activeUser.pass = window.contestantDatabase[window.activeUser.id].pass;
+                        }
+                    }
+                }, (error) => {
+                    console.log("Firestore onSnapshot error:", error);
+                });
+            } catch(e) {
+                console.error("Firestore listen error", e);
+            }
+        }
+
+        // Helper function to save changes to Firestore
+        window.syncStudentToCloud = async function(userId, updateObj) {
+            try {
+                if (!auth.currentUser) return;
+                const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', userId);
+                await setDoc(studentRef, updateObj, { merge: true });
+            } catch (e) {
+                console.warn("Cloud Sync Error:", e);
+            }
+        };
+
+        // Initialize auth on load
+        initAuth();
+    </script>
+
     <script>
         // Data Feed Endpoint
         const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc0uKR34rIFoSlyG-3uMSLr-53gIbXI6oB2raiWPvzlVblXHNmRZBsolOpnRNkpt0-4lgFs6rc1rkF/pub?output=csv";
 
         let sheetActionUrl = ""; 
         let adminPassword = "123";
+        window.isAdminOpen = false;
 
         // Database
-        let contestantDatabase = {
+        window.contestantDatabase = {
             "BTG760": { name: "Manha Fathima", place: "Perumalabad", gender: "Female", class: "", category: "7 Senior", phone: "7510645137", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "786313" },
             "BTG851": { name: "Nusaibathul Mazniyya", place: "Perumalabad", gender: "Female", class: "", category: "6 Junior", phone: "9876543210", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "sajida" },
             "BTB221": { name: "Musthafa B", place: "Habeeb Nagar", gender: "Male", class: "", category: "5 Junior", phone: "9876543211", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "123456" },
@@ -643,7 +738,7 @@
             "BTG351": { name: "Ayisha Razana Ak", place: "Perumalabad", gender: "Female", class: "", category: "6 Junior", phone: "9876543217", examDate: "ONLINE: OCT 15 (8 PM) | OFFLINE: OCT 17 (3 PM)", venue: "MADRASATHUL IMAN, EDAKKOM", pass: "123456" }
         };
 
-        let activeUser = null;
+        window.activeUser = null;
 
         // Shaikh Jeelani (r) 10 Unnumbered Facts
         const jeelaniFacts = [
@@ -672,10 +767,10 @@
 
         // Restore custom modified passwords saved in Local Storage across sessions
         function restoreLocalPasswords() {
-            Object.keys(contestantDatabase).forEach(id => {
+            Object.keys(window.contestantDatabase).forEach(id => {
                 const savedPass = localStorage.getItem(`ssf_pass_${id}`);
                 if (savedPass) {
-                    contestantDatabase[id].pass = savedPass;
+                    window.contestantDatabase[id].pass = savedPass;
                 }
             });
         }
@@ -708,7 +803,7 @@
 
             await fetchSheetData();
 
-            const student = contestantDatabase[userId];
+            const student = window.contestantDatabase[userId];
             if (!student) {
                 msgBox.className = "text-xs font-semibold text-rose-400";
                 msgBox.innerText = "തന്ന യൂസർ ഐ.ഡി കണ്ടെത്താനായില്ല!";
@@ -726,9 +821,13 @@
                     return;
                 }
 
-                // Save new password persistently for this student
+                // Save new password persistently and sync to Cloud
                 localStorage.setItem(`ssf_pass_${userId}`, newPass);
-                contestantDatabase[userId].pass = newPass;
+                window.contestantDatabase[userId].pass = newPass;
+
+                if (window.syncStudentToCloud) {
+                    window.syncStudentToCloud(userId, { pass: newPass });
+                }
 
                 msgBox.className = "text-xs font-semibold text-emerald-400";
                 msgBox.innerText = "പാസ്‌വേഡ് വിജയകരമായി മാറ്റി! ഇപ്പോൾ ലോഗിൻ ചെയ്യാം.";
@@ -843,17 +942,17 @@
 
                         if (userId && userId.startsWith("BT")) {
                             const savedPass = localStorage.getItem(`ssf_pass_${userId}`);
-                            contestantDatabase[userId] = { 
+                            window.contestantDatabase[userId] = { 
                                 name, 
                                 place, 
                                 gender, 
                                 class: classVal, 
                                 category, 
-                                phone: phoneVal || (contestantDatabase[userId] ? contestantDatabase[userId].phone : ''),
+                                phone: phoneVal || (window.contestantDatabase[userId] ? window.contestantDatabase[userId].phone : ''),
                                 examDate, 
                                 venue, 
-                                pass: savedPass || passwordVal,
-                                profilePhoto: profilePhotoVal 
+                                pass: savedPass || (window.contestantDatabase[userId] ? window.contestantDatabase[userId].pass : passwordVal),
+                                profilePhoto: profilePhotoVal || (window.contestantDatabase[userId] ? window.contestantDatabase[userId].profilePhoto : '')
                             };
                             
                             if (profilePhotoVal && !localStorage.getItem(`ssf_photo_${userId}`)) {
@@ -920,7 +1019,7 @@
                 return;
             }
 
-            const student = contestantDatabase[userId];
+            const student = window.contestantDatabase[userId];
             if (!student) {
                 errBox.innerHTML = `<div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 font-semibold text-center">ഐ.ഡി "${userId}" സെർവറിൽ കണ്ടെത്താനായില്ല.</div>`;
                 return;
@@ -932,43 +1031,47 @@
             }
 
             // Successful Login
-            activeUser = { id: userId, ...student };
+            window.activeUser = { id: userId, ...student };
             localStorage.setItem('ssf_active_user_id', userId);
             localStorage.setItem(`ssf_session_${userId}`, 'true');
+
+            if (window.syncStudentToCloud) {
+                window.syncStudentToCloud(userId, { sessionActive: true });
+            }
 
             showUserDashboard();
         }
 
         function checkAutoLogin() {
             const savedId = localStorage.getItem('ssf_active_user_id');
-            if (savedId && contestantDatabase[savedId]) {
+            if (savedId && window.contestantDatabase[savedId]) {
                 const savedPass = localStorage.getItem(`ssf_pass_${savedId}`);
-                activeUser = { id: savedId, ...contestantDatabase[savedId] };
-                if (savedPass) activeUser.pass = savedPass;
+                window.activeUser = { id: savedId, ...window.contestantDatabase[savedId] };
+                if (savedPass) window.activeUser.pass = savedPass;
                 showUserDashboard();
             }
         }
 
         function showUserDashboard() {
-            if (!activeUser) return;
+            if (!window.activeUser) return;
 
             document.getElementById('portal-main-view').classList.add('hidden');
             document.getElementById('portal-user-view').classList.remove('hidden');
 
-            document.getElementById('user-display-id').innerText = activeUser.id;
-            document.getElementById('user-display-name').innerText = activeUser.name;
-            document.getElementById('user-display-category').innerText = activeUser.category || 'Participant';
+            document.getElementById('user-display-id').innerText = window.activeUser.id;
+            document.getElementById('user-display-name').innerText = window.activeUser.name;
+            document.getElementById('user-display-category').innerText = window.activeUser.category || 'Participant';
 
-            document.getElementById('ht-userid').innerText = activeUser.id;
-            document.getElementById('ht-name').innerText = activeUser.name;
-            document.getElementById('ht-place').innerText = activeUser.place || 'PERUMALABAD';
-            document.getElementById('ht-gender').innerText = activeUser.gender || 'N/A';
-            document.getElementById('ht-cat').innerText = activeUser.category || 'N/A';
-            document.getElementById('ht-date').innerText = activeUser.examDate;
-            document.getElementById('ht-venue').innerText = activeUser.venue;
+            document.getElementById('ht-userid').innerText = window.activeUser.id;
+            document.getElementById('ht-name').innerText = window.activeUser.name;
+            document.getElementById('ht-place').innerText = window.activeUser.place || 'PERUMALABAD';
+            document.getElementById('ht-gender').innerText = window.activeUser.gender || 'N/A';
+            document.getElementById('ht-cat').innerText = window.activeUser.category || 'N/A';
+            document.getElementById('ht-date').innerText = window.activeUser.examDate;
+            document.getElementById('ht-venue').innerText = window.activeUser.venue;
 
             // Load saved photo if exists
-            const savedPhoto = localStorage.getItem(`ssf_photo_${activeUser.id}`) || activeUser.profilePhoto;
+            const savedPhoto = localStorage.getItem(`ssf_photo_${window.activeUser.id}`) || window.activeUser.profilePhoto;
             if (savedPhoto) {
                 setProfilePhoto(savedPhoto);
             } else {
@@ -979,7 +1082,7 @@
             
             document.getElementById('header-user-status').innerHTML = `
                 <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-300 font-bold hidden sm:inline">${activeUser.name}</span>
+                    <span class="text-xs text-slate-300 font-bold hidden sm:inline">${window.activeUser.name}</span>
                     <button onclick="handleLogout()" class="px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-bold hover:bg-rose-500/30">
                         Logout
                     </button>
@@ -988,10 +1091,13 @@
         }
 
         function handleLogout() {
-            if (activeUser && activeUser.id) {
-                localStorage.removeItem(`ssf_session_${activeUser.id}`);
+            if (window.activeUser && window.activeUser.id) {
+                localStorage.removeItem(`ssf_session_${window.activeUser.id}`);
+                if (window.syncStudentToCloud) {
+                    window.syncStudentToCloud(window.activeUser.id, { sessionActive: false });
+                }
             }
-            activeUser = null;
+            window.activeUser = null;
             localStorage.removeItem('ssf_active_user_id');
 
             document.getElementById('portal-user-view').classList.add('hidden');
@@ -1024,16 +1130,12 @@
                 const base64Img = e.target.result;
                 setProfilePhoto(base64Img);
 
-                if (activeUser) {
-                    localStorage.setItem(`ssf_photo_${activeUser.id}`, base64Img);
-                    contestantDatabase[activeUser.id].profilePhoto = base64Img;
+                if (window.activeUser) {
+                    localStorage.setItem(`ssf_photo_${window.activeUser.id}`, base64Img);
+                    window.contestantDatabase[window.activeUser.id].profilePhoto = base64Img;
 
-                    if (sheetActionUrl) {
-                        fetch(sheetActionUrl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ userId: activeUser.id, profilePhoto: base64Img })
-                        }).catch(err => console.log('Sheet upload error:', err));
+                    if (window.syncStudentToCloud) {
+                        window.syncStudentToCloud(window.activeUser.id, { profilePhoto: base64Img });
                     }
                 }
             };
@@ -1063,19 +1165,15 @@
         }
 
         function handleRemovePhoto() {
-            if (activeUser && activeUser.id !== 'ADMIN') {
-                localStorage.removeItem(`ssf_photo_${activeUser.id}`);
-                if (contestantDatabase[activeUser.id]) {
-                    contestantDatabase[activeUser.id].profilePhoto = '';
+            if (window.activeUser && window.activeUser.id !== 'ADMIN') {
+                localStorage.removeItem(`ssf_photo_${window.activeUser.id}`);
+                if (window.contestantDatabase[window.activeUser.id]) {
+                    window.contestantDatabase[window.activeUser.id].profilePhoto = '';
                 }
                 resetProfilePhoto();
 
-                if (sheetActionUrl) {
-                    fetch(sheetActionUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ userId: activeUser.id, profilePhoto: '' })
-                    }).catch(err => console.log('Sheet sync error:', err));
+                if (window.syncStudentToCloud) {
+                    window.syncStudentToCloud(window.activeUser.id, { profilePhoto: "" });
                 }
             }
         }
@@ -1087,9 +1185,9 @@
             const newPass = document.getElementById('user-new-pass').value.trim();
             const msgBox = document.getElementById('pass-change-msg');
 
-            if (!activeUser) return;
+            if (!window.activeUser) return;
 
-            if (oldPass !== activeUser.pass) {
+            if (oldPass !== window.activeUser.pass) {
                 msgBox.className = "text-[11px] font-medium text-center text-rose-400";
                 msgBox.innerText = "നിലവിലെ പാസ്‌വേഡ് തെറ്റാണ്!";
                 return;
@@ -1101,11 +1199,15 @@
                 return;
             }
 
-            // Save new password persistently for this student
-            localStorage.setItem(`ssf_pass_${activeUser.id}`, newPass);
-            activeUser.pass = newPass;
-            if (contestantDatabase[activeUser.id]) {
-                contestantDatabase[activeUser.id].pass = newPass;
+            // Save new password persistently and sync to Cloud
+            localStorage.setItem(`ssf_pass_${window.activeUser.id}`, newPass);
+            window.activeUser.pass = newPass;
+            if (window.contestantDatabase[window.activeUser.id]) {
+                window.contestantDatabase[window.activeUser.id].pass = newPass;
+            }
+
+            if (window.syncStudentToCloud) {
+                window.syncStudentToCloud(window.activeUser.id, { pass: newPass });
             }
 
             msgBox.className = "text-[11px] font-medium text-center text-emerald-400";
@@ -1120,17 +1222,21 @@
         // Daily Reading Log Tracker
         function handleSaveReadingLog(e) {
             e.preventDefault();
-            if (!activeUser) return;
+            if (!window.activeUser) return;
 
             const date = document.getElementById('log-date').value;
             const pages = document.getElementById('log-pages').value.trim();
             const notes = document.getElementById('log-notes').value.trim();
 
-            const storageKey = `ssf_logs_${activeUser.id}`;
+            const storageKey = `ssf_logs_${window.activeUser.id}`;
             const existingLogs = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
             existingLogs.unshift({ date, pages, notes, timestamp: new Date().toLocaleDateString('ml-IN') });
             localStorage.setItem(storageKey, JSON.stringify(existingLogs));
+
+            if (window.syncStudentToCloud) {
+                window.syncStudentToCloud(window.activeUser.id, { logs: existingLogs });
+            }
 
             document.getElementById('log-pages').value = '';
             document.getElementById('log-notes').value = '';
@@ -1139,9 +1245,9 @@
         }
 
         function loadReadingLogs() {
-            if (!activeUser) return;
+            if (!window.activeUser) return;
             const container = document.getElementById('reading-logs-container');
-            const storageKey = `ssf_logs_${activeUser.id}`;
+            const storageKey = `ssf_logs_${window.activeUser.id}`;
             const logs = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
             if (logs.length === 0) {
@@ -1192,7 +1298,7 @@
                     }
 
                     fetchSheetData().then(() => {
-                        if (contestantDatabase[cleanCode]) {
+                        if (window.contestantDatabase[cleanCode]) {
                             document.getElementById('login-userid').value = cleanCode;
                             document.getElementById('login-error-msg').innerHTML = `
                                 <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-center font-semibold">
@@ -1269,11 +1375,13 @@
         }
 
         function openAdminDashboard() {
+            window.isAdminOpen = true;
             document.getElementById('admin-view-modal').classList.remove('hidden');
             renderAdminTable();
         }
 
         function closeAdminDashboard() {
+            window.isAdminOpen = false;
             document.getElementById('admin-view-modal').classList.add('hidden');
         }
 
@@ -1285,15 +1393,15 @@
             const tbody = document.getElementById('admin-table-body');
             tbody.innerHTML = '';
 
-            const keys = Object.keys(contestantDatabase);
+            const keys = Object.keys(window.contestantDatabase);
             let totalCount = keys.length;
             let photoCount = 0;
             let activeOnlineCount = 0;
 
             keys.forEach(id => {
-                const student = contestantDatabase[id];
+                const student = window.contestantDatabase[id];
                 const savedPhoto = localStorage.getItem(`ssf_photo_${id}`) || student.profilePhoto;
-                const isSessionActive = localStorage.getItem(`ssf_session_${id}`) === 'true';
+                const isSessionActive = student.sessionActive || (localStorage.getItem(`ssf_session_${id}`) === 'true');
 
                 if (savedPhoto) photoCount++;
                 if (isSessionActive) activeOnlineCount++;
@@ -1356,6 +1464,8 @@
             document.getElementById('photo-preview-modal').classList.add('hidden');
             document.getElementById('photo-preview-modal').classList.remove('flex');
         }
+        
+        window.renderAdminTable = renderAdminTable;
     </script>
 </body>
 </html>

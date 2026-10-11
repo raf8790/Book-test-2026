@@ -177,7 +177,12 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">പാസ്‌വേഡ് (Password)</label>
-                            <input type="password" id="login-pass" placeholder="പാസ്‌വേഡ് നൽകുക" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                            <div class="relative">
+                                <input type="password" id="login-pass" placeholder="പാസ്‌വേഡ് നൽകുക" required class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-3 pr-10 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                                <button type="button" onclick="togglePasswordVisibility('login-pass', 'login-pass-icon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
+                                    <i id="login-pass-icon" class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
                         </div>
                         <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 rounded-lg transition-all shadow-md flex items-center justify-center gap-2">
                             <i class="fa-solid fa-right-to-bracket"></i> Student Login
@@ -197,7 +202,8 @@
                             <h3 class="font-bold text-slate-200">പ്രധാന നിർദ്ദേശങ്ങൾ</h3>
                         </div>
                         <ul class="text-xs text-slate-300 space-y-2.5 list-disc list-inside leading-relaxed">
-                            <li>നിങ്ങൾക്ക് ലഭിച്ച ഹാൾ ടിക്കറ്റിലെ ക്യു.ആർ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ട് യൂസർ ഐഡി നൽകി Password നൽകി Login ചെയ്യാം .</li>
+                            <li>നിങ്ങൾക്ക് ലഭിച്ച ഹാൾ ടിക്കറ്റിലെ ക്യു.ആർ കോഡ് സ്കാൻ ചെയ്തുകൊണ്ട് യൂസർ ഐഡി സ്വയമേവ വരുത്തുക.</li>
+                            <li>നിങ്ങളുടെ പ്രൊഫൈലിൽ ഫോട്ടോ അപ്‌ലോഡ് ചെയ്ത് ഹാൾ ടിക്കറ്റ് കൂടുതൽ വ്യക്തിഗതമാക്കാം.</li>
                             <li>ലോഗിൻ ചെയ്ത ശേഷം ദിവസേന വായിക്കുന്ന വിവരങ്ങളും പ്രധാന കുറപ്പുകളും രേഖപ്പെടുത്താവുന്നതാണ്.</li>
                             <li>ഓൺലൈൻ ടെസ്റ്റ് ഒക്ടോബർ 15 വ്യാഴാഴ്ച കൃത്യം 8:00 മണിക്ക് ആരംഭിക്കും.</li>
                             <li>ഓഫ്‌ലൈൻ ടെസ്റ്റ് ഒക്ടോബർ 17 ശനിയാഴ്ച വൈകുന്നേരം 3:00 മണിക്ക് <strong>മദ്റസത്തുൽ ഈമാൻ, ഇടക്കോം</strong> വേദിയിൽ നടക്കും.</li>
@@ -306,8 +312,18 @@
                             <i class="fa-solid fa-key text-brand-400"></i> പാസ്‌വേഡ് മാറ്റുക (Change Password)
                         </h5>
                         <form onsubmit="handlePasswordChange(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                            <input type="password" id="old-pass-input" placeholder="നിലവിലെ പാസ്‌വേഡ്" required class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
-                            <input type="password" id="new-pass-input" placeholder="പുതിയ പാസ്‌വേഡ്" required class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                            <div class="relative">
+                                <input type="password" id="old-pass-input" placeholder="നിലവിലെ പാസ്‌വേഡ്" required class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-3 pr-8 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                                <button type="button" onclick="togglePasswordVisibility('old-pass-input', 'old-pass-icon')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
+                                    <i id="old-pass-icon" class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <input type="password" id="new-pass-input" placeholder="പുതിയ പാസ്‌വേഡ്" required class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-3 pr-8 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                                <button type="button" onclick="togglePasswordVisibility('new-pass-input', 'new-pass-icon')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
+                                    <i id="new-pass-icon" class="fa-solid fa-eye text-xs"></i>
+                                </button>
+                            </div>
                             <button type="submit" class="bg-brand-600 hover:bg-brand-500 text-white text-xs font-bold py-1.5 px-3 rounded-lg transition-all flex items-center justify-center gap-1">
                                 <i class="fa-solid fa-arrows-rotate"></i> അപ്‌ഡേറ്റ് ചെയ്യുക
                             </button>
@@ -540,7 +556,12 @@ function doPost(e) {
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-[11px] font-bold text-slate-300 uppercase mb-1">Admin Password</label>
-                    <input type="password" id="admin-modal-pass" placeholder="Enter Admin Password" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                    <div class="relative">
+                        <input type="password" id="admin-modal-pass" placeholder="Enter Admin Password" required class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-3 pr-10 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                        <button type="button" onclick="togglePasswordVisibility('admin-modal-pass', 'admin-modal-pass-icon')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors">
+                            <i id="admin-modal-pass-icon" class="fa-solid fa-eye text-xs"></i>
+                        </button>
+                    </div>
                 </div>
                 <div id="admin-error-msg" class="text-xs text-rose-400 font-semibold text-center"></div>
                 <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs py-2.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2">
@@ -637,6 +658,23 @@ function doPost(e) {
 
             updateTimer();
             setInterval(updateTimer, 1000);
+        }
+
+        // Toggle Password Visibility Function
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {

@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ml">
 <head>
@@ -415,7 +416,7 @@
                         <!-- Saved Logs List -->
                         <div class="mt-4 pt-3 border-t border-slate-800">
                             <h5 class="text-[11px] font-bold text-slate-400 uppercase mb-2">മുമ്പ് രേഖപ്പെടുത്തിയവ</h5>
-                            <div id="reading-logs-container" class="space-y-2 max-h-40 overflow-y-auto pr-1 text-xs">
+                            <div id="reading-logs-container" class="space-y-2 max-h-52 overflow-y-auto pr-1 text-xs">
                                 <!-- Log entries rendered dynamically -->
                             </div>
                         </div>
@@ -428,6 +429,46 @@
         </div>
 
     </main>
+
+    <!-- STUDENT EDIT LOG MODAL -->
+    <div id="student-edit-log-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4 z-[60]">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 border border-brand-500/30 shadow-2xl relative">
+            <button onclick="closeStudentEditLogModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h4 class="font-bold text-white text-base mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-brand-400"></i> വായനാ വിവരങ്ങൾ തിരുത്തുക
+            </h4>
+            <form onsubmit="handleStudentSaveLogEdit(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="student-edit-log-index">
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">തീയതി</label>
+                        <input type="date" id="student-edit-log-date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">വായിച്ച പേജുകൾ</label>
+                        <input type="text" id="student-edit-log-pages" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">പ്രധാനപ്പെട്ട ഭാഗങ്ങൾ / കുറിപ്പ്</label>
+                    <textarea id="student-edit-log-notes" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <div class="pt-2 flex items-center gap-2">
+                    <button type="submit" class="flex-1 bg-brand-600 hover:bg-brand-500 text-white font-bold py-2 rounded-xl transition-all shadow-md">
+                        Save Updates
+                    </button>
+                    <button type="button" onclick="closeStudentEditLogModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- FOOTER WITH SECRET ADMIN TRIPLE CLICK -->
     <footer onclick="handleFooterClick()" class="border-t border-slate-800/80 bg-slate-950 py-6 mt-10 cursor-pointer select-none">
@@ -521,6 +562,7 @@
                                 <th class="p-3.5">Mobile</th>
                                 <th class="p-3.5">Password</th>
                                 <th class="p-3.5">Status</th>
+                                <th class="p-3.5 text-center">Reading Logs & Points</th>
                             </tr>
                         </thead>
                         <tbody id="admin-table-body" class="divide-y divide-slate-800/60 text-slate-300">
@@ -530,6 +572,77 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- ADMIN LOGS & POINTS MODAL -->
+    <div id="admin-logs-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4 z-50">
+        <div class="glass-card max-w-2xl w-full rounded-2xl p-6 border border-brand-500/30 shadow-2xl relative flex flex-col max-h-[85vh]">
+            <button onclick="closeAdminLogsModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="mb-4 pb-3 border-b border-slate-800 flex items-center justify-between pr-8">
+                <div>
+                    <h3 id="admin-logs-student-name" class="font-extrabold text-white text-base">Student Reading Data</h3>
+                    <p id="admin-logs-student-id" class="text-xs font-mono text-brand-400 font-bold">BTG760</p>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1.5 rounded-xl">
+                    <span class="text-xs font-bold text-slate-300 uppercase">Total Points:</span>
+                    <span id="admin-logs-total-points" class="text-base font-black text-amber-400 font-mono">0</span>
+                </div>
+            </div>
+
+            <!-- Reading Logs List for Admin -->
+            <div id="admin-logs-container" class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+                <!-- Log entries with edit, delete, and point fields -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN EDIT LOG ITEM MODAL -->
+    <div id="admin-edit-log-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md hidden items-center justify-center p-4 z-[60]">
+        <div class="glass-card max-w-md w-full rounded-2xl p-6 border border-brand-500/30 shadow-2xl relative">
+            <button onclick="closeAdminEditLogModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h4 class="font-bold text-white text-base mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-brand-400"></i> Edit Reading Log Entry
+            </h4>
+            <form onsubmit="handleAdminSaveLogEdit(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="edit-log-student-id">
+                <input type="hidden" id="edit-log-index">
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">തീയതി</label>
+                        <input type="date" id="edit-log-date" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">പേജുകൾ</label>
+                        <input type="text" id="edit-log-pages" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">കുറിപ്പ് / വിവരണം</label>
+                    <textarea id="edit-log-notes" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-amber-400 uppercase mb-1"><i class="fa-solid fa-star mr-1"></i>നൽകുന്ന പോയിന്റ് (Point)</label>
+                    <input type="number" id="edit-log-points" min="0" value="0" class="w-full bg-slate-900 border border-amber-500/50 rounded-lg px-2.5 py-1.5 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div class="pt-2 flex items-center gap-2">
+                    <button type="submit" class="flex-1 bg-brand-600 hover:bg-brand-500 text-white font-bold py-2 rounded-xl transition-all">
+                        Save Changes
+                    </button>
+                    <button type="button" onclick="closeAdminEditLogModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-2 rounded-xl">
+                        Cancel
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -686,10 +799,16 @@
                     });
                     if (window.isAdminOpen) {
                         window.renderAdminTable();
+                        if (window.currentAdminActiveLogUserId) {
+                            window.openAdminLogsModal(window.currentAdminActiveLogUserId);
+                        }
                     }
                     if (window.activeUser && window.contestantDatabase[window.activeUser.id]) {
                         if (window.activeUser.pass !== window.contestantDatabase[window.activeUser.id].pass) {
                             window.activeUser.pass = window.contestantDatabase[window.activeUser.id].pass;
+                        }
+                        if (window.loadReadingLogs) {
+                            window.loadReadingLogs();
                         }
                     }
                 }, (error) => {
@@ -722,6 +841,7 @@
         let sheetActionUrl = ""; 
         let adminPassword = "123";
         window.isAdminOpen = false;
+        window.currentAdminActiveLogUserId = null;
 
         // Database
         window.contestantDatabase = {
@@ -1255,15 +1375,91 @@
                 return;
             }
 
-            container.innerHTML = logs.map((log) => `
-                <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
-                    <div class="flex justify-between items-center text-[10px] font-bold text-brand-400 mb-1">
+            container.innerHTML = logs.map((log, idx) => `
+                <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl space-y-1.5">
+                    <div class="flex justify-between items-center text-[10px] font-bold text-brand-400">
                         <span><i class="fa-regular fa-calendar mr-1"></i>${log.date || log.timestamp}</span>
-                        <span class="bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">പേജ്: ${log.pages}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">പേജ്: ${log.pages}</span>
+                            ${log.points ? `<span class="bg-amber-400/10 border border-amber-400/30 text-amber-300 px-1.5 py-0.5 rounded font-extrabold">★ ${log.points} Pts</span>` : ''}
+                        </div>
                     </div>
                     ${log.notes ? `<p class="text-slate-300 text-[11px] font-medium leading-normal">${log.notes}</p>` : ''}
+                    <div class="flex justify-end items-center gap-2 pt-1 border-t border-slate-800/60">
+                        <button onclick="openStudentEditLogModal(${idx})" class="text-[10px] text-brand-400 hover:text-brand-300 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button onclick="handleStudentDeleteLog(${idx})" class="text-[10px] text-rose-400 hover:text-rose-300 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        // Student Edit/Delete Functions
+        function openStudentEditLogModal(logIdx) {
+            if (!window.activeUser) return;
+            const storageKey = `ssf_logs_${window.activeUser.id}`;
+            const userLogs = JSON.parse(localStorage.getItem(storageKey) || "[]");
+            const log = userLogs[logIdx];
+            if (!log) return;
+
+            document.getElementById('student-edit-log-index').value = logIdx;
+            document.getElementById('student-edit-log-date').value = log.date || '';
+            document.getElementById('student-edit-log-pages').value = log.pages || '';
+            document.getElementById('student-edit-log-notes').value = log.notes || '';
+
+            const modal = document.getElementById('student-edit-log-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeStudentEditLogModal() {
+            const modal = document.getElementById('student-edit-log-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleStudentSaveLogEdit(e) {
+            e.preventDefault();
+            if (!window.activeUser) return;
+
+            const logIdx = parseInt(document.getElementById('student-edit-log-index').value);
+            const storageKey = `ssf_logs_${window.activeUser.id}`;
+            const userLogs = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+            if (!userLogs[logIdx]) return;
+
+            userLogs[logIdx].date = document.getElementById('student-edit-log-date').value;
+            userLogs[logIdx].pages = document.getElementById('student-edit-log-pages').value.trim();
+            userLogs[logIdx].notes = document.getElementById('student-edit-log-notes').value.trim();
+
+            localStorage.setItem(storageKey, JSON.stringify(userLogs));
+
+            if (window.syncStudentToCloud) {
+                window.syncStudentToCloud(window.activeUser.id, { logs: userLogs });
+            }
+
+            closeStudentEditLogModal();
+            loadReadingLogs();
+        }
+
+        function handleStudentDeleteLog(logIdx) {
+            if (!window.activeUser) return;
+            const storageKey = `ssf_logs_${window.activeUser.id}`;
+            const userLogs = JSON.parse(localStorage.getItem(storageKey) || "[]");
+
+            if (!userLogs[logIdx]) return;
+
+            userLogs.splice(logIdx, 1);
+            localStorage.setItem(storageKey, JSON.stringify(userLogs));
+
+            if (window.syncStudentToCloud) {
+                window.syncStudentToCloud(window.activeUser.id, { logs: userLogs });
+            }
+
+            loadReadingLogs();
         }
 
         // QR Code Scanner Control
@@ -1403,6 +1599,9 @@
                 const savedPhoto = localStorage.getItem(`ssf_photo_${id}`) || student.profilePhoto;
                 const isSessionActive = student.sessionActive || (localStorage.getItem(`ssf_session_${id}`) === 'true');
 
+                const userLogs = JSON.parse(localStorage.getItem(`ssf_logs_${id}`) || "[]");
+                const totalPoints = userLogs.reduce((acc, log) => acc + (Number(log.points) || 0), 0);
+
                 if (savedPhoto) photoCount++;
                 if (isSessionActive) activeOnlineCount++;
 
@@ -1441,6 +1640,13 @@
                                 `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">OFFLINE</span>`
                             }
                         </td>
+                        <td class="p-3 text-center">
+                            <button onclick="openAdminLogsModal('${id}')" class="px-3 py-1 bg-brand-500/10 border border-brand-500/30 hover:bg-brand-500/20 text-brand-400 font-bold rounded-lg transition-all text-xs inline-flex items-center gap-1.5">
+                                <i class="fa-solid fa-book-open"></i>
+                                <span>Logs (${userLogs.length})</span>
+                                <span class="bg-amber-400/20 text-amber-300 px-1.5 py-0.5 rounded-md text-[10px] font-extrabold border border-amber-400/30 ml-1">★ ${totalPoints}</span>
+                            </button>
+                        </td>
                     `;
                     tbody.appendChild(tr);
                 }
@@ -1449,6 +1655,128 @@
             document.getElementById('admin-stat-total').innerText = totalCount;
             document.getElementById('admin-stat-photos').innerText = photoCount;
             document.getElementById('admin-stat-online').innerText = activeOnlineCount;
+        }
+
+        function openAdminLogsModal(userId) {
+            window.currentAdminActiveLogUserId = userId;
+            const student = window.contestantDatabase[userId];
+            if (!student) return;
+
+            document.getElementById('admin-logs-student-name').innerText = `${student.name}'s Reading Data`;
+            document.getElementById('admin-logs-student-id').innerText = userId;
+
+            renderAdminLogsList(userId);
+
+            const modal = document.getElementById('admin-logs-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAdminLogsModal() {
+            window.currentAdminActiveLogUserId = null;
+            const modal = document.getElementById('admin-logs-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function renderAdminLogsList(userId) {
+            const container = document.getElementById('admin-logs-container');
+            const userLogs = JSON.parse(localStorage.getItem(`ssf_logs_${userId}`) || "[]");
+
+            const totalPoints = userLogs.reduce((acc, log) => acc + (Number(log.points) || 0), 0);
+            document.getElementById('admin-logs-total-points').innerText = totalPoints;
+
+            if (userLogs.length === 0) {
+                container.innerHTML = `<div class="p-6 text-center text-slate-500 italic">ഈ വിദ്യാർത്ഥി ഇതുവരെ വായനാ വിവരങ്ങൾ ചേർത്തിട്ടില്ല.</div>`;
+                return;
+            }
+
+            container.innerHTML = userLogs.map((log, idx) => `
+                <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-brand-400"><i class="fa-regular fa-calendar mr-1"></i>${log.date || log.timestamp}</span>
+                            <span class="bg-slate-800 px-2 py-0.5 rounded text-slate-300 font-semibold text-[11px]">പേജ്: ${log.pages}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-amber-500/10 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-lg text-[11px] font-bold">
+                                ★ ${log.points || 0} Points
+                            </span>
+                        </div>
+                    </div>
+                    ${log.notes ? `<p class="text-slate-300 text-xs font-medium bg-slate-950/50 p-2 rounded-lg border border-slate-800/80">${log.notes}</p>` : ''}
+                    <div class="flex justify-end items-center gap-2 pt-1 border-t border-slate-800/80">
+                        <button onclick="openAdminEditLogModal('${userId}', ${idx})" class="text-xs text-brand-400 hover:text-brand-300 px-2.5 py-1 rounded bg-brand-500/10 border border-brand-500/20 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-pen"></i> Edit / Assign Points
+                        </button>
+                        <button onclick="handleAdminDeleteLog('${userId}', ${idx})" class="text-xs text-rose-400 hover:text-rose-300 px-2.5 py-1 rounded bg-rose-500/10 border border-rose-500/20 font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAdminEditLogModal(userId, logIdx) {
+            const userLogs = JSON.parse(localStorage.getItem(`ssf_logs_${userId}`) || "[]");
+            const log = userLogs[logIdx];
+            if (!log) return;
+
+            document.getElementById('edit-log-student-id').value = userId;
+            document.getElementById('edit-log-index').value = logIdx;
+            document.getElementById('edit-log-date').value = log.date || '';
+            document.getElementById('edit-log-pages').value = log.pages || '';
+            document.getElementById('edit-log-notes').value = log.notes || '';
+            document.getElementById('edit-log-points').value = log.points || 0;
+
+            const modal = document.getElementById('admin-edit-log-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAdminEditLogModal() {
+            const modal = document.getElementById('admin-edit-log-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleAdminSaveLogEdit(e) {
+            e.preventDefault();
+            const userId = document.getElementById('edit-log-student-id').value;
+            const logIdx = parseInt(document.getElementById('edit-log-index').value);
+
+            const userLogs = JSON.parse(localStorage.getItem(`ssf_logs_${userId}`) || "[]");
+            if (!userLogs[logIdx]) return;
+
+            userLogs[logIdx].date = document.getElementById('edit-log-date').value;
+            userLogs[logIdx].pages = document.getElementById('edit-log-pages').value.trim();
+            userLogs[logIdx].notes = document.getElementById('edit-log-notes').value.trim();
+            userLogs[logIdx].points = parseInt(document.getElementById('edit-log-points').value) || 0;
+
+            localStorage.setItem(`ssf_logs_${userId}`, JSON.stringify(userLogs));
+
+            if (window.syncStudentToCloud) {
+                window.syncStudentToCloud(userId, { logs: userLogs });
+            }
+
+            closeAdminEditLogModal();
+            renderAdminLogsList(userId);
+            renderAdminTable();
+        }
+
+        function handleAdminDeleteLog(userId, logIdx) {
+            const userLogs = JSON.parse(localStorage.getItem(`ssf_logs_${userId}`) || "[]");
+            if (!userLogs[logIdx]) return;
+
+            userLogs.splice(logIdx, 1);
+            localStorage.setItem(`ssf_logs_${userId}`, JSON.stringify(userLogs));
+
+            if (window.syncStudentToCloud) {
+                window.syncStudentToCloud(userId, { logs: userLogs });
+            }
+
+            renderAdminLogsList(userId);
+            renderAdminTable();
         }
 
         function previewAdminPhoto(id, name, photoUrl) {
@@ -1466,6 +1794,18 @@
         }
         
         window.renderAdminTable = renderAdminTable;
+        window.openAdminLogsModal = openAdminLogsModal;
+        window.openAdminEditLogModal = openAdminEditLogModal;
+        window.closeAdminEditLogModal = closeAdminEditLogModal;
+        window.handleAdminSaveLogEdit = handleAdminSaveLogEdit;
+        window.handleAdminDeleteLog = handleAdminDeleteLog;
+        window.closeAdminLogsModal = closeAdminLogsModal;
+        window.openStudentEditLogModal = openStudentEditLogModal;
+        window.closeStudentEditLogModal = closeStudentEditLogModal;
+        window.handleStudentSaveLogEdit = handleStudentSaveLogEdit;
+        window.handleStudentDeleteLog = handleStudentDeleteLog;
+        window.loadReadingLogs = loadReadingLogs;
     </script>
 </body>
 </html>
+```
